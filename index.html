@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,11 +112,100 @@
     color: black;
 }
 
+.coming-soon-slider {
+    scroll-snap-type: x mandatory;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.slider-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.slider-item {
+    flex: 0 0 auto;
+    width: 200px; /* Adjust the width as per your design */
+    scroll-snap-align: start;
+}
+
+.slider-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+}
+
+/* Hide vertical scrollbar for the entire page */
+body, html {
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    max-height: 100vh; /* Optional: Limit the height of the body to the viewport height */
+}
+
+/* Hide horizontal scrollbar for the slider */
+.slider-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+/* Ensure the body or main container supports vertical scrolling if needed */
+body, .main-container {
+    overflow-x: hidden; /* Hide horizontal overflow */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+
+/* Hide scrollbar for aesthetic purposes */
+.coming-soon-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.coming-soon-slider {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}   
+
+/* Custom styles for movie tiles */
+.movie-tile {
+    transition: transform 0.3s;
+    cursor: pointer;
+    background: rgb(232, 222, 222); /* Set background to white */
+    border-radius: 15px; /* Rounded corners */
+    padding: 10px; /* Padding inside the tile */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
+}
+
+.movie-tile:hover {
+    transform: scale(1.05);
+}
+
+.movie-tile img {
+    border-radius: 10px; /* Rounded corners for images */
+    margin-bottom: 10px; /* Space between image and text */
+}
+
+/* Ensure text is visible against the white background */
+.movie-tile h3, .movie-tile p {
+    color: black; /* Dark text color for readability */
+    text-align: left;
+    margin: 5px 0; /* Margin for spacing */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for all text */
+}
+
+
+
+
     </style>
 </head>
-<body class="text-white">
+<body class="text-black">
     <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
+        <h1 class="text-6xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
         <h2 class="text-left">🤘.The Jews took hollywood...we're stealing it back</h2>
         <div class="melon"></div>
         <div class="relative text-gray-600">
@@ -127,11 +216,23 @@
               </svg>
             </button>
           </div>
+        <br>
         
         <div id="movies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <!-- Movie tiles will be added here -->
         </div>
     </div>
+<!-- Coming Soon Section -->
+<div id="comingSoon" class="my-8">
+    <h2 class="text-2xl font-bold mb-4 text-left pl-4">Coming Soon</h2>
+    <div class="slider-container flex overflow-x-auto pl-4 pr-2 py-2 space-x-4">
+        <!-- Slider items will be added here by JavaScript -->
+    </div>
+</div>
+
+
+    
+    
 
   
     <!-- Fullscreen video player modal -->
@@ -151,40 +252,58 @@
             fetchMovies();
         });
 
-        function fetchMovies() {
-            fetch('https://api.themoviedb.org/3/movie/popular?api_key=8bb85bb00bf81f0ad511a7609d736c7f&language=en')
-                .then(response => response.json())
-                .then(data => displayMovies(data.results))
-                .catch(error => console.error('Fetching movies failed:', error));
-        }
-
+      
         function displayMovies(movies) {
-        const moviesContainer = document.getElementById('movies');
-        movies.forEach(movie => {
-            const movieElement = document.createElement('div');
-            movieElement.className = 'movie-tile p-2';
-            movieElement.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
-                <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
-                <p class="text-black-400 text-sm">${movie.overview}</p>
-            `;
-            movieElement.addEventListener('click', function() {
-                // Set the video URL dynamically for each movie (you might need to change this based on your actual logic)
-                document.getElementById('videoContainer').innerHTML = `
-                <iframe
-                        src="https://real-debrid.com/streaming-S4NTZMF3PUXWG21"
-                        style="border: none; position: absolute; top: 0; left: 0; height: 100vh; width: 100vw;"
-                        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                        allowfullscreen="true"
-                    ></iframe>
-                    </div>
-                `;
-                openVideoPlayer();
-            });
+    const moviesContainer = document.getElementById('movies');
+    movies.forEach(movie => {
+        const movieElement = document.createElement('div');
+        movieElement.className = 'movie-tile p-2';
+        movieElement.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
+            <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
+            <p class="text-black-400 text-sm">${movie.overview}</p>
+        `;
+        movieElement.addEventListener('click', function() {
+            // Check for specific movies and set a custom URL
+            let customURL = '';
+            switch(movie.title) {
+                case 'Simon Birch':
+                    customURL = "YOUR_SPECIFIC_URL_FOR_SIMON_BIRCH";
+                    break;
+                case 'Drop Dead Fred':
+                    customURL = "YOUR_SPECIFIC_URL_FOR_DROP_DEAD_FRED";
+                    break;
+                case 'Sneakers':
+                    customURL = "YOUR_SPECIFIC_URL_FOR_SNEAKERS";
+                    break;
+                case 'Barbie':
+                    customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/7e2087e531ef364ba1eb7d9974b2ca3b/watch";
+                    break;
+                case 'Oppenheimer':
+                    customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/c8a2ff260b91f7998e72b098cf0fd8f2/watch";
+                    break;
+                default:
+                    customURL = "https://real-debrid.com/streaming-S4NTZMF3PUXWG21"; // Default URL for other movies
+                    break;
+            }
 
-            moviesContainer.appendChild(movieElement);
+            document.getElementById('videoContainer').innerHTML = `
+                <iframe
+                    src="${customURL}"
+                    style="border: none; position: absolute; top: 0; left: 0; height: 100vh; width: 100vw;"
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                    allowfullscreen="true"
+                ></iframe>
+            `;
+            openVideoPlayer();
         });
-    }
+
+        moviesContainer.appendChild(movieElement);
+    });
+}
+
+
+
 
     function openVideoPlayer() {
         document.getElementById('videoModal').style.display = 'block';
@@ -201,14 +320,13 @@
         });
 
         function fetchSpecificMovies() {
-            // Titles of the movies to fetch
-            const moviesToFetch = ['Simon Birch', 'Drop Dead Fred'];
+    // Add 'Sneakers', 'Barbie', and 'Oppenheimer' to the array
+    const moviesToFetch = ['Simon Birch', 'Drop Dead Fred', 'Sneakers', 'Barbie', 'Oppenheimer'];
 
-            moviesToFetch.forEach(title => {
-                searchMovie(title);
-            });
-        }
-
+    moviesToFetch.forEach(title => {
+        searchMovie(title);
+    });
+    }
         function searchMovie(movieTitle) {
             const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Replace with your actual API key
             const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(movieTitle)}`;
@@ -225,6 +343,33 @@
                 })
                 .catch(error => console.error(`Fetching movie failed: ${movieTitle}`, error));
         }
+
+        
+        function fetchMovies() {
+    fetch('https://api.themoviedb.org/3/movie/popular?api_key=8bb85bb00bf81f0ad511a7609d736c7f&language=en')
+        .then(response => response.json())
+        .then(data => {
+            // displayMovies(data.results); // Display movies in grid
+            displayComingSoon(data.results); // Display movies in "Coming Soon" slider
+        })
+        .catch(error => console.error('Fetching movies failed:', error));
+}
+
+function displayComingSoon(movies) {
+    const comingSoonContainer = document.querySelector('.slider-container');
+    movies.forEach(movie => {
+        const sliderItem = document.createElement('div');
+        sliderItem.className = 'slider-item p-2 rounded-lg';
+        sliderItem.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
+            <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
+        `;
+        comingSoonContainer.appendChild(sliderItem);
+    });
+}
+
+
+
 </script>
 </body>
 </html>
