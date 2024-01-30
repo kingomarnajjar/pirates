@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermelon Movies 🍉</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+    /* Custom styles for movie tiles */
+    .movie-tile {
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .movie-tile:hover {
+            transform: scale(1.05);
+        }
+
+        /* Background gradient color */
+        body {
+            background: linear-gradient(to right, #32cd32 50%, #ff6347 50%);
+        }
+
+        /* RTL text alignment */
+        .movie-tile h3, .movie-tile p {
+            text-align: left;
+        }
+
+       /* Fullscreen video player modal styles */
+.video-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.video-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 1010; /* Ensure it's above the iframe */
+}
+
+/* Updated styles for the video container */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.melon {
+   width: 6em;
+   height: 6em;
+   background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/21542/melon.svg) no-repeat no-repeat;
+   background-size: 48em; /* 6em * 8 */
+   background-position: 0% 0%;
+   
+   animation: melonSequence 0.8s steps(7) infinite reverse;
+   
+   margin: 0em auto;
+}
+
+@keyframes melonSequence {
+   from {
+      background-position: 0% 0%;
+   }
+   to {
+      background-position: 100% 0%;
+   }
+}
+
+.flex {
+    display: flex;
+    flex-direction: row-reverse; /* Reverse the order for RTL */
+}
+
+.search-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    text-align: right; /* For RTL */
+}
+
+.search-btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    color: black;
+}
+
+    </style>
+</head>
+<body class="text-white">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
+        <h2 class="text-left">🤘.The Jews took hollywood...we're stealing it back</h2>
+        <div class="melon"></div>
+        <div class="relative text-gray-600">
+            <input type="search" name="serch" placeholder="Search" class="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none">
+            <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+              <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;" xml:space="preserve" width="512px" height="512px">
+                <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"/>
+              </svg>
+            </button>
+          </div>
+        
+        <div id="movies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Movie tiles will be added here -->
+        </div>
+    </div>
+
+  
+    <!-- Fullscreen video player modal -->
+    <div id="videoModal" class="video-modal">
+        <div class="video-modal-content">
+            <span class="close" onclick="closeVideoPlayer()">&times;</span>
+            <!-- Cloudflare Stream Video Player -->
+            <div id="videoContainer" style="position: relative; padding-top: 75%; width: 100%; height: 100%;">
+                <!-- Video iframe will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchMovies();
+        });
+
+        function fetchMovies() {
+            fetch('https://api.themoviedb.org/3/movie/popular?api_key=8bb85bb00bf81f0ad511a7609d736c7f&language=en')
+                .then(response => response.json())
+                .then(data => displayMovies(data.results))
+                .catch(error => console.error('Fetching movies failed:', error));
+        }
+
+        function displayMovies(movies) {
+        const moviesContainer = document.getElementById('movies');
+        movies.forEach(movie => {
+            const movieElement = document.createElement('div');
+            movieElement.className = 'movie-tile p-2';
+            movieElement.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
+                <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
+                <p class="text-black-400 text-sm">${movie.overview}</p>
+            `;
+            movieElement.addEventListener('click', function() {
+                // Set the video URL dynamically for each movie (you might need to change this based on your actual logic)
+                document.getElementById('videoContainer').innerHTML = `
+                <iframe
+                        src="https://real-debrid.com/streaming-S4NTZMF3PUXWG21"
+                        style="border: none; position: absolute; top: 0; left: 0; height: 100vh; width: 100vw;"
+                        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                        allowfullscreen="true"
+                    ></iframe>
+                    </div>
+                `;
+                openVideoPlayer();
+            });
+
+            moviesContainer.appendChild(movieElement);
+        });
+    }
+
+    function openVideoPlayer() {
+        document.getElementById('videoModal').style.display = 'block';
+    }
+
+    function closeVideoPlayer() {
+        document.getElementById('videoModal').style.display = 'none';
+        // Stop the video when closing the modal
+        document.getElementById('videoPlayer').src = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+            fetchSpecificMovies();
+        });
+
+        function fetchSpecificMovies() {
+            // Titles of the movies to fetch
+            const moviesToFetch = ['Simon Birch', 'Drop Dead Fred'];
+
+            moviesToFetch.forEach(title => {
+                searchMovie(title);
+            });
+        }
+
+        function searchMovie(movieTitle) {
+            const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Replace with your actual API key
+            const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(movieTitle)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results.length > 0) {
+                        const movie = data.results[0]; // Assuming the first result is the desired one
+                        displayMovies([movie]); // Reusing your existing function to display the movie
+                    } else {
+                        console.log(`Movie not found: ${movieTitle}`);
+                    }
+                })
+                .catch(error => console.error(`Fetching movie failed: ${movieTitle}`, error));
+        }
+</script>
+</body>
+</html>
