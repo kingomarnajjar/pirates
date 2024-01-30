@@ -312,10 +312,15 @@ body {
     }
 
     function closeVideoPlayer() {
-        document.getElementById('videoModal').style.display = 'none';
-        // Stop the video when closing the modal
-        document.getElementById('videoPlayer').src = '';
+    document.getElementById('videoModal').style.display = 'none';
+    // Correctly target the iframe and stop the video by resetting its 'src'
+    var iframe = document.getElementById('videoContainer').querySelector('iframe');
+    if (iframe) {
+        var iframeSrc = iframe.src;
+        iframe.src = iframeSrc; // This will effectively reload (and thus stop) the video
     }
+}
+
 
     document.addEventListener('DOMContentLoaded', function() {
             fetchSpecificMovies();
