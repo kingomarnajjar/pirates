@@ -32,15 +32,16 @@
             text-align: left;
         }
 
-       /* Fullscreen video player modal styles */
+/* Fullscreen video player modal styles */
 .video-modal {
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; /* Adjust as needed */
+    height: 100%; /* Adjust as needed */
     background-color: rgba(0, 0, 0, 0.9);
     padding: 0;
     margin: 0;
@@ -56,18 +57,11 @@
 .close {
     position: absolute;
     top: 20px;
-    left: 30px;
+    right: 30px; /* Changed from left to right */
     color: white;
     font-size: 40px;
     cursor: pointer;
     z-index: 1010; /* Ensure it's above the iframe */
-}
-
-/* Updated styles for the video container */
-.video-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
 }
 
 .video-container iframe {
@@ -78,6 +72,7 @@
     height: 100%;
     border: none;
 }
+
 
 .melon {
    width: 6em;
@@ -227,20 +222,6 @@ body {
             <!-- Movie tiles will be added here -->
         </div>
     </div>
-    <a href="vlc://https%3A%2F%2F21.download.real-debrid.com%2Fr%2FXFWNTTHGADGYM%2FRick.and.Morty.S07E08.Rise.of.the.Numbericons.The.Movie.1080p.HMAX.WEB-DL.DD5.1.x264-NTb.mkv">Open in VLC</a>
-<a href="vlc://https://21.download.real-debrid.com/r/XFWNTTHGADGYM/Rick.and.Morty.S07E08.Rise.of.the.Numbericons.The.Movie.1080p.HMAX.WEB-DL.DD5.1.x264-NTb.mkv">Open in VLC NOT ENCODED</a>
-
-            <div id="movies"
-                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <!-- Movie tiles will be added here -->
-            </div>
-        </div>
-        <a
-            href="vlc://https://21.download.real-debrid.com%2Fr%2FXFWNTTHGADGYM%2FRick.and.Morty.S07E08.Rise.of.the.Numbericons.The.Movie.1080p.HMAX.WEB-DL.DD5.1.x264-NTb.mkv">Open
-            in VLC</a>
-        <a
-            href="vlc://https://21.download.real-debrid.com/r/XFWNTTHGADGYM/Rick.and.Morty.S07E08.Rise.of.the.Numbericons.The.Movie.1080p.HMAX.WEB-DL.DD5.1.x264-NTb.mkv">Open
-            in VLC NOT ENCODED</a>
 
         <!-- Coming Soon Section -->
         <div id="comingSoon" class="my-8">
@@ -268,68 +249,56 @@ body {
             fetchMovies();
         });
 
-      
-        function displayMovies(movies) {
-        const moviesContainer = document.getElementById('movies');
-        movies.forEach(movie => {
-            const movieElement = document.createElement('div');
-            movieElement.className = 'movie-tile p-2';
-            movieElement.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
-                <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
-                <p class="text-black-400 text-sm">${movie.overview}</p>
-            `;
+        const customURLs = {
+    "Simon Birch": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9bbbbb31d5eba50521e7f2c524ff38ac/watch",
+    "Drop Dead Fred": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/b909bb0aa6763c9832ad4be50eaeb4b7/watch",
+    "Sneakers": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f3191be6c61879b6fde28cbbe9a13eed/watch",
+    "Barbie": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/7e2087e531ef364ba1eb7d9974b2ca3b/watch",
+    "Oppenheimer": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/c8a2ff260b91f7998e72b098cf0fd8f2/watch",
+    "Angel Heart": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6166aadd3d82cebfd6242079f39c316e/watch",
+    "El Topo": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9046cea25793e43d5dee945e0d8d4d84/watch",
+    "The Holy Mountain": "https://real-debrid.com/streaming-UWDKWSBJWTLN423",
+    "Katyn": "https://real-debrid.com/streaming-UWDKWSBJWTLN423"
+    // ... add more custom URLs as needed
+};
+
+        function mergeCustomURLs(movies, customURLs) {
+    return movies.map(movie => {
+        if (customURLs[movie.title]) {
+            return {...movie, customURL: customURLs[movie.title]};
+        }
+        return movie;
+    });
+}
+
+// Add this function to update the video player's URL and display it
+function updateVideoPlayerAndShow(url) {
+    const videoContainer = document.getElementById('videoContainer');
+    videoContainer.innerHTML = `<iframe src="${url}" style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`;
+    openVideoPlayer();
+}
+
+function displayMovies(movies) {
+    const moviesContainer = document.getElementById('movies');
+    movies.forEach(movie => {
+        const movieElement = document.createElement('div');
+        movieElement.className = 'movie-tile p-2';
+        movieElement.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
+            <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
+            <p class="text-black-400 text-sm">${movie.overview}</p>
+        `;
+
+        const customURL = customURLs[movie.title];
+        if (customURL) {
             movieElement.addEventListener('click', function() {
-                if (movie.title === 'The Heist Before Christmas') {
-                    window.location.href = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
-                } else {
-                    let customURL = '';
-                    switch(movie.title) {
-                        case 'Simon Birch':
-                        customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9bbbbb31d5eba50521e7f2c524ff38ac/watch";
-                        break;
-                        case 'Drop Dead Fred':
-                        customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/b909bb0aa6763c9832ad4be50eaeb4b7/watch";
-                        break;
-                        case 'Sneakers':
-                        customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f3191be6c61879b6fde28cbbe9a13eed/watch";
-                        break;
-                        case 'Barbie':
-                        customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/7e2087e531ef364ba1eb7d9974b2ca3b/watch";
-                        break;
-                        case 'Oppenheimer':
-                        customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/c8a2ff260b91f7998e72b098cf0fd8f2/watch";
-                        break;
-                        case 'Angel Heart':
-                        customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6166aadd3d82cebfd6242079f39c316e/watch";
-                        break;
-                        case 'El Topo':
-                        customURL = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
-                        break;
-                        case 'The Holy Mountain':
-                        customURL = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
-                        break;
-                        case 'Katyn':
-                        customURL = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
-                        break;
-                        default:
-                            customURL = "https://www.youtube.com/embed/dQw4w9WgXcQ?si=WRCU3Rw9hsafmtp3";
-                            break;
-                    }
-                    document.getElementById('videoContainer').innerHTML = `
-                        <iframe
-                            src="${customURL}"
-                            style="border: none; position: absolute; top: 0; left: 0; height: 100vh; width: 100vw;"
-                            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                            allowfullscreen="true"
-                        ></iframe>
-                    `;
-                    openVideoPlayer();
-                }
-                moviesContainer.appendChild(movieElement);
+                updateVideoPlayerAndShow(customURL);
             });
-        });
-    }
+        }
+
+        moviesContainer.appendChild(movieElement);
+    });
+}
 
 
 
