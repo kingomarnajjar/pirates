@@ -269,8 +269,11 @@ body {
             <p class="text-black-400 text-sm">${movie.overview}</p>
         `;
         movieElement.addEventListener('click', function() {
-            // Check for specific movies and set a custom URL
-            let customURL = '';
+            if (movie.title === 'The Heist Before Christmas') {
+                // Full-page redirect to the Real Debrid link for 'The Heist Before Christmas'
+                window.location.href = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
+            } else {
+                let customURL = '';
             switch(movie.title) {
                 case 'Simon Birch':
                     customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9bbbbb31d5eba50521e7f2c524ff38ac/watch";
@@ -286,6 +289,18 @@ body {
                     break;
                 case 'Oppenheimer':
                     customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/c8a2ff260b91f7998e72b098cf0fd8f2/watch";
+                    break;
+                    case 'The Heist Before Christmas':
+                    customURL = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
+                    break;
+                case 'Angel Heart':
+                    customURL = "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6166aadd3d82cebfd6242079f39c316e/watch";
+                    break;
+                case 'El Topo':
+                    customURL = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
+                    break;
+                case 'The Holy Mountain':
+                    customURL = "https://real-debrid.com/streaming-UWDKWSBJWTLN423";
                     break;
                 default:
                     customURL = "https://www.youtube.com/embed/dQw4w9WgXcQ?si=WRCU3Rw9hsafmtp3"; // Default URL for other movies
@@ -331,8 +346,7 @@ body {
 
         function fetchSpecificMovies() {
     // Add 'Sneakers', 'Barbie', and 'Oppenheimer' to the array
-    const moviesToFetch = ['Simon Birch', 'Drop Dead Fred', 'Sneakers', 'Barbie', 'Oppenheimer'];
-
+    const moviesToFetch = ['El Topo', 'The Holy Mountain','Angel Heart','Simon Birch', 'Drop Dead Fred', 'Sneakers', 'Barbie', 'Oppenheimer', 'The Heist Before Christmas'];
     moviesToFetch.forEach(title => {
         searchMovie(title);
     });
