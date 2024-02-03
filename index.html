@@ -38,8 +38,8 @@
     position: fixed;
     z-index: 1000;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    top: 25%; /* Adjusted from 50% to 25% to move the modal up */
+    transform: translate(-50%, -25%); /* Adjusted the Y-translate value */
     width: 100%; /* Adjust as needed */
     height: 100%; /* Adjust as needed */
     background-color: rgba(0, 0, 0, 0.9);
@@ -47,6 +47,7 @@
     margin: 0;
     box-sizing: border-box;
 }
+
 
 .video-modal-content {
     position: relative;
@@ -238,7 +239,7 @@ body {
                 <span class="close" onclick="closeVideoPlayer()">&times;</span>
                 <!-- Cloudflare Stream Video Player -->
                 <div id="videoContainer"
-                    style="position: relative; padding-top: 75%; width: 100%; height: 100%;">
+                    style="position: relative; padding-top: 10%; width: 100%; height: 100%;">
                     <!-- Video iframe will be inserted here -->
                 </div>
             </div>
@@ -258,7 +259,9 @@ body {
     "Angel Heart": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6166aadd3d82cebfd6242079f39c316e/watch",
     "El Topo": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9046cea25793e43d5dee945e0d8d4d84/watch",
     "The Holy Mountain": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/331ad3d67b0a56f6a2dae7630b1eec72/watch",
-    "Katyn": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f0f5ac7fa8d3b147cced19d265118bc4/watch"
+    "Katyn": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f0f5ac7fa8d3b147cced19d265118bc4/watch",
+    "Blank Check": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/075f8e99b0322088bcde884418e5e861/watch",
+    "Richie Rich": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/7cbcf7a43ba2b11dc683365cf2b889a2/watch"
     // ... add more custom URLs as needed
 };
 
