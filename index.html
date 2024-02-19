@@ -199,7 +199,126 @@ body {
     font-family: 'Courier New', Courier, monospace; /* Monospace font for all text */
 }
 
+/* Pricing Modal styles */
+.pricing-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 2000; /* Higher than video modal for stacking */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+}
 
+.pricing-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.pricing-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pricing-modal-title {
+    font-size: 2em;
+}
+
+.pricing-modal-close {
+    color: #aaaaaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pricing-modal-close:hover,
+.pricing-modal-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pricing-modal-body { padding: 2px 16px; }
+
+.pricing-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+}
+
+.pricing-modal-close-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer
+
+}
+
+.comparison-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.comparison-section, .vs-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.comparison-image {
+    width: 300px; /* Adjust the size as needed */
+    height: auto;
+}
+
+.vs-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vs {
+    font-size: 2em; /* Large text size */
+    font-weight: bold; /* Bold text */
+    color: #ff6347; /* Text color, choose what fits your design */
+    margin: 0 20px;
+}
+
+.watermelon {
+    font-size: 4em; /* Larger size for emphasis */
+}
+
+.price-text {
+    font-size: 1.5em; /* Adjust as needed */
+    margin-top: 10px; /* Space between the image/icon and the price */
+    font-weight: bold;
+}
+
+
+.vs {
+    font-size: 2em; /* Large text size */
+    font-weight: bold; /* Bold text */
+    color: #ff6347; /* Text color, choose what fits your design */
+    margin-right: 20px;
+}
+
+.watermelon {
+    font-size: 4em; /* Larger size for emphasis */
+    text-align: right; 
+}
 
 
     </style>
@@ -218,6 +337,40 @@ body {
             </button>
           </div>
         <br>
+
+        <!-- Pricing Modal -->
+<div id="pricingModal" class="pricing-modal">
+    <div class="pricing-modal-content">
+        <div class="pricing-modal-header">
+            <p class="pricing-modal-title">Pricing Plans</p>
+            <div class="pricing-modal-close">&times;</div>
+        </div>
+       <div class="pricing-modal-body">
+    <p>Netflix was supposed to make life cheaper. Watermelon is bringing sexflix back.</p>
+    <div class="comparison-container">
+        <div class="comparison-section">
+            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ffabrikbrands.com%2Fwp-content%2Fuploads%2FStreaming-Service-Logos-1.png&f=1&nofb=1&ipt=e34a611c3faf2eab1fd111d7837e4e060f6816cf6d079fe55ec8183ea75ce637&ipo=images" alt="Streaming Service Logos" class="comparison-image">
+            <div class="price-text">~$100</div>
+        </div>
+        <div class="vs-container">
+            <div class="vs">VS</div>
+        </div>
+        <div class="comparison-section">
+            <div class="watermelon">🍉</div>
+            <div class="price-text">~$10</div>
+        </div>
+    </div>
+</div>
+
+        
+
+       
+        <div class="pricing-modal-footer">
+            <button class="pricing-modal-close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
         
         <div id="movies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <!-- Movie tiles will be added here -->
@@ -248,6 +401,8 @@ body {
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             fetchMovies();
+            fetchSpecificMovies();
+            openPricingModal();
         });
 
         const customURLs = {
@@ -273,6 +428,29 @@ body {
         return movie;
     });
 }
+
+// Function to open the pricing modal
+function openPricingModal() {
+    const pricingModal = document.getElementById('pricingModal');
+    pricingModal.style.display = 'block';
+}
+
+// Add event listeners to the close buttons in the pricing modal
+const pricingModalCloseButtons = document.querySelectorAll('.pricing-modal-close, .pricing-modal-close-btn');
+pricingModalCloseButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('pricingModal').style.display = 'none';
+    });
+});
+
+// Close the pricing modal if the user clicks outside of it
+window.addEventListener('click', function(event) {
+    const pricingModal = document.getElementById('pricingModal');
+    if (event.target == pricingModal) {
+        pricingModal.style.display = 'none';
+    }
+});
+
 
 // Add this function to update the video player's URL and display it
 function updateVideoPlayerAndShow(url) {
@@ -321,10 +499,6 @@ function displayMovies(movies) {
     }
 }
 
-
-    document.addEventListener('DOMContentLoaded', function() {
-            fetchSpecificMovies();
-        });
 
         function fetchSpecificMovies() {
     // Add 'Sneakers', 'Barbie', and 'Oppenheimer' to the array
