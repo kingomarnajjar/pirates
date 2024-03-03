@@ -328,15 +328,13 @@ function displaySearchResults(movies) {
             <div>
                 <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
                 <p class="text-black-400 text-sm">${movie.overview}</p>
-                <button class="stream-btn bg-green-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Stream</button>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="fetchAndStreamMovie('${movie.title}')">Stream</button>
+                <br>
+                <br>   
+                <button class="send-to-cloudflare-btn bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onclick="sendToCloudflare('${movie.id}')">Send to Cloudflare</button>
             </div>
         `;
         resultsContainer.appendChild(movieElement);
-
-        // Attach event listener to the "Stream" button
-        movieElement.querySelector('.stream-btn').addEventListener('click', function() {
-            fetchAndStreamMovie(movie.title);
-        });
     });
 }
 
@@ -349,6 +347,31 @@ function fetchAndStreamMovie(title) {
     // Open the video modal and set the iframe src to the worker URL
     document.getElementById('videoContainer').innerHTML = `<iframe src="${workerUrl}" style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;" allowfullscreen="true"></iframe>`;
     openVideoPlayer();
+}
+
+function sendToCloudflare(movieId) {
+    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+    fetch(`https://api.themoviedb.org/3/movie/${movieId}/external_ids?api_key=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.imdb_id) {
+                const imdbId = data.imdb_id;
+                // Replace YOUR_CLOUDFLARE_WORKER_URL with your actual Cloudflare Worker URL
+                const url = `https://addtorrentstoqbitorrent.omar-c29.workers.dev/?imdbID=${imdbId}`;
+                // Make a GET request to the Cloudflare Worker
+                fetch(url).then(response => {
+                    if (response.ok) {
+                        console.log(`Successfully sent IMDb ID ${imdbId} to Cloudflare Worker.`);
+                        // Process response from Cloudflare Worker here, if necessary
+                    } else {
+                        console.error('Failed to send IMDb ID to Cloudflare Worker. Response status:', response.status);
+                    }
+                }).catch(error => console.error('Error sending IMDb ID to Cloudflare Worker:', error));
+            } else {
+                console.error('IMDb ID not found for movie ID:', movieId);
+            }
+        })
+        .catch(error => console.error('Error fetching IMDb ID:', error));
 }
 
 
