@@ -328,10 +328,27 @@ function displaySearchResults(movies) {
             <div>
                 <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
                 <p class="text-black-400 text-sm">${movie.overview}</p>
+                <button class="stream-btn bg-green-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Stream</button>
             </div>
         `;
         resultsContainer.appendChild(movieElement);
+
+        // Attach event listener to the "Stream" button
+        movieElement.querySelector('.stream-btn').addEventListener('click', function() {
+            fetchAndStreamMovie(movie.title);
+        });
     });
+}
+
+// Function to fetch and stream movie
+function fetchAndStreamMovie(title) {
+    // Here, you would send the title to your Cloudflare Worker
+    // Assuming your Worker is set up to handle requests at /stream?title=<movie title>
+    const workerUrl = `https://search-query-cors-proxy.omar-c29.workers.dev/stream?filter=${encodeURIComponent(title)}`;
+
+    // Open the video modal and set the iframe src to the worker URL
+    document.getElementById('videoContainer').innerHTML = `<iframe src="${workerUrl}" style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;" allowfullscreen="true"></iframe>`;
+    openVideoPlayer();
 }
 
 
