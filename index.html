@@ -230,6 +230,15 @@ body {
         <div id="movies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <!-- Movie tiles will be added here -->
         </div>
+
+        
+        <!-- TV Shows Section -->
+        <div id="tvShows" class="my-8">
+            <h2 class="text-2xl font-bold mb-4 text-left pl-4">TV Shows</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" id="tvShowsContainer">
+                <!-- TV show tiles will be added here -->
+            </div>
+        </div>
     </div>
 
         <!-- Coming Soon Section -->
@@ -253,9 +262,23 @@ body {
             </div>
         </div>
 
+        <!-- Seasons and Episodes Modal -->
+<div id="seasonsEpisodesModal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="bg-white rounded-lg p-5 shadow-xl">
+        <div id="modalContent">
+          <!-- Dynamic content will be loaded here -->
+        </div>
+        <span class="closeModal cursor-pointer text-gray-700">&times; Close</span>
+      </div>
+    </div>
+  </div>
+  
+
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             fetchMovies();
+            fetchTvShows();
         });
 
         const customURLs = {
@@ -279,6 +302,14 @@ body {
     "Patch Adams": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8f7e07357746722f23e667d7d901e295/watch",
     // ... add more custom URLs as needed
 };
+
+const customTVShowURLs = {
+        "Stranger Things": "https://example.com/stranger-things",
+        "The Witcher": "https://example.com/the-witcher",
+        "Breaking Bad": "https://example.com/breaking-bad",
+        "Hoarders": "",
+        // Add more custom URLs for TV shows here...
+    };
 
         function mergeCustomURLs(movies, customURLs) {
     return movies.map(movie => {
@@ -343,7 +374,7 @@ function displaySearchResults(movies) {
 function fetchAndStreamMovie(title) {
     // Here, you would send the title to your Cloudflare Worker
     // Assuming your Worker is set up to handle requests at /stream?title=<movie title>
-    const workerUrl = `https://search-query-cors-proxy.omar-c29.workers.dev/stream?filter=${encodeURIComponent(title)}`;
+    const workerUrl = `https://production.search-query-cors-proxy.omar-c29.workers.dev/stream?filter=${encodeURIComponent(title)}`;
 
     // Open the video modal and set the iframe src to the worker URL
     document.getElementById('videoContainer').innerHTML = `<iframe src="${workerUrl}" style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;" allowfullscreen="true"></iframe>`;
@@ -427,6 +458,7 @@ function displayMovies(movies) {
 
     document.addEventListener('DOMContentLoaded', function() {
             fetchSpecificMovies();
+            fetchSpecificTvShows();
         });
 
         function fetchSpecificMovies() {
@@ -463,6 +495,131 @@ function displayMovies(movies) {
         })
         .catch(error => console.error('Fetching movies failed:', error));
 }
+
+            function fetchTvShows() {
+                const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+                const url = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=en-US&page=1`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayTvShows(data.results);
+                    })
+                    .catch(error => console.error('Error fetching TV shows:', error));
+            }
+
+            function fetchSpecificTvShows() {
+    const tvShowsToFetch = ['Stranger Things', 'The Witcher', 'Breaking Bad', 'Hoarders'];
+    tvShowsToFetch.forEach(title => {
+        searchTvShow(title);
+    });
+}
+
+
+function searchTvShow(tvShowTitle) {
+    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+    const url = `https://api.themoviedb.org/3/search/tv?api_key=${apiKey}&query=${encodeURIComponent(tvShowTitle)}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length > 0) {
+                const tvShow = data.results[0]; // Assuming the first result is the desired one
+                displayTvShows([tvShow]); // Adjust this if necessary to handle multiple shows
+            } else {
+                console.log(`TV Show not found: ${tvShowTitle}`);
+            }
+        })
+        .catch(error => console.error(`Fetching TV show failed: ${tvShowTitle}`, error));
+}
+
+function displayTvShows(tvShows) {
+    const tvShowsContainer = document.getElementById('tvShowsContainer');
+
+    // Directly append each new TV show element without clearing existing content.
+    tvShows.forEach(tvShow => {
+        const tvShowElement = document.createElement('div');
+        tvShowElement.className = 'movie-tile p-2';
+        tvShowElement.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${tvShow.poster_path}" alt="${tvShow.name}" class="w-full h-auto rounded">
+            <h3 class="text-xl font-semibold mt-2">${tvShow.name}</h3>
+            <p class="text-black-400 text-sm">${tvShow.overview}</p>
+        `;
+
+        const customURL = customTVShowURLs[tvShow.name];
+        if (customURL) {
+            tvShowElement.addEventListener('click', function() {
+                updateVideoPlayerAndShow(customURL);
+            });
+        }
+
+        tvShowsContainer.appendChild(tvShowElement);
+    });
+}
+
+// Assume this is a function triggered when a TV show tile is clicked.
+function fetchSeasonsAndEpisodes(tvShowId) {
+    const apiKey = 'YOUR_API_KEY';
+    const url = `https://api.themoviedb.org/3/tv/${tvShowId}?api_key=${apiKey}&append_to_response=seasons`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            displaySeasons(data.seasons, tvShowId);
+        })
+        .catch(error => console.error('Fetching seasons failed:', error));
+}
+
+// Display seasons in a dropdown or modal
+function displaySeasons(seasons, tvShowId) {
+    const seasonsContainer = document.createElement('div');
+    seasonsContainer.id = 'seasonsContainer';
+    // Add logic to populate the container with season information
+    // This could be a series of buttons or a dropdown menu
+
+    seasons.forEach(season => {
+        const seasonElement = document.createElement('button');
+        seasonElement.textContent = `Season ${season.season_number}`;
+        seasonElement.onclick = () => fetchEpisodes(tvShowId, season.season_number);
+        seasonsContainer.appendChild(seasonElement);
+    });
+
+    // Append the seasonsContainer to your page
+    document.body.appendChild(seasonsContainer);
+}
+
+// Fetch episodes for a specific season
+function fetchEpisodes(tvShowId, seasonNumber) {
+    const apiKey = 'YOUR_API_KEY';
+    const url = `https://api.themoviedb.org/3/tv/${tvShowId}/season/${seasonNumber}?api_key=${apiKey}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            displayEpisodes(data.episodes);
+        })
+        .catch(error => console.error(`Fetching episodes for season ${seasonNumber} failed:`, error));
+}
+
+// Display episodes in a list or another suitable UI component
+function displayEpisodes(episodes) {
+    const episodesContainer = document.createElement('div');
+    episodesContainer.id = 'episodesContainer';
+    // Populate the container with episode information
+
+    episodes.forEach(episode => {
+        const episodeElement = document.createElement('div');
+        episodeElement.textContent = `Episode ${episode.episode_number}: ${episode.name}`;
+        // Add logic to handle episode selection and streaming
+        episodesContainer.appendChild(episodeElement);
+    });
+
+    // Append the episodesContainer to your page or update the existing container
+    document.body.appendChild(episodesContainer);
+}
+
+
+
 
 function displayComingSoon(movies) {
     const comingSoonContainer = document.querySelector('.slider-container');
