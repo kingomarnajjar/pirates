@@ -213,6 +213,12 @@ body {
 .text-gray-700 { color: #4a5568; }
 
 
+.episode-link-hover:hover {
+            color: #4CAF50; /* Change the color to what fits your design */
+            text-decoration: underline; /* Example styling, modify as needed */
+        }
+
+
 .special-button {
             background-color: #4CAF50; /* Green */
             border: none;
@@ -255,43 +261,6 @@ body {
         <div id="searchResults" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <!-- Search results will be displayed here -->
         </div>
-
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/e23ced1cf3a3186443566e6c7e9e5956/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 1</a>
-        </div>
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8fceb5f380ceff0fa15ebfac4b5662b1/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 2</a>
-        </div>
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/3ce05e8aeaa871c30d68d99158f5d9ff/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 3</a>
-        </div>
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/4898ab901a7d9fdcf2092bfbf55cd466/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 4</a>
-        </div>
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/5d7aef6b070f2109b9475d87e6a33bc5/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 5</a>
-        </div>
-
-
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6980d3088f0fd9e44b2add9f19854071/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 7</a>
-        </div>
-
-
-        <div class="special-container">
-            <a href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8e25d3e5ed07c7018d51c2e4f797319f/watch" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 8</a>
-        </div>
-
-        <div class="special-container">
-            <a href="YOUR_CUSTOM_URL_HERE" class="special-button" target="_blank">Watch Hoarders Season 15 Episode 10</a>
-        </div>
-
 
 
         <div id="movies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -604,27 +573,56 @@ function searchTvShow(tvShowTitle) {
 
 function displayTvShows(tvShows) {
     const tvShowsContainer = document.getElementById('tvShowsContainer');
+    const imageUrlBase = 'https://image.tmdb.org/t/p/w500'; // Base URL for TMDB images
 
-    // Directly append each new TV show element without clearing existing content.
     tvShows.forEach(tvShow => {
         const tvShowElement = document.createElement('div');
         tvShowElement.className = 'movie-tile p-2';
         tvShowElement.innerHTML = `
-            <img src="https://image.tmdb.org/t/p/w500${tvShow.poster_path}" alt="${tvShow.name}" class="w-full h-auto rounded">
+            <img src="${imageUrlBase}${tvShow.poster_path}" alt="${tvShow.name}" class="w-full h-auto rounded">
             <h3 class="text-xl font-semibold mt-2">${tvShow.name}</h3>
             <p class="text-black-400 text-sm">${tvShow.overview}</p>
         `;
 
-        const customURL = customTVShowURLs[tvShow.name];
-        if (customURL) {
+        // Here's where you'd add any specific logic for "Hoarders" or other shows
+        if (tvShow.name === "Hoarders") {
             tvShowElement.addEventListener('click', function() {
-                updateVideoPlayerAndShow(customURL);
+                displayHoardersSeasonsEpisodes();
             });
         }
 
         tvShowsContainer.appendChild(tvShowElement);
     });
 }
+
+
+function displayHoardersSeasonsEpisodes() {
+    const modal = document.getElementById('seasonsEpisodesModal');
+    const content = modal.querySelector('#modalContent');
+    content.innerHTML = `
+        <h2>Hoarders - Seasons and Episodes</h2>
+        <!-- Populate with your Hoarders seasons and episodes links -->
+        <div>Season 15: 
+            <ul>
+                <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/e23ced1cf3a3186443566e6c7e9e5956/watch" target="_blank">Episode 1</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8fceb5f380ceff0fa15ebfac4b5662b1/watch" target="_blank">Episode 2</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/3ce05e8aeaa871c30d68d99158f5d9ff/watch" target="_blank">Episode 3</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/4898ab901a7d9fdcf2092bfbf55cd466/watch" target="_blank">Episode 4</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/5d7aef6b070f2109b9475d87e6a33bc5/watch" target="_blank">Episode 5</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6980d3088f0fd9e44b2add9f19854071/watch" target="_blank">Episode 7</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8e25d3e5ed07c7018d51c2e4f797319f/watch" target="_blank">Episode 8</a></li>
+    <!-- The link for Episode 10 was a placeholder. Add it once available. -->
+                <!-- Add more episodes -->
+            </ul>
+        </div>
+    `;
+    modal.classList.remove('hidden');
+}
+
+// Assuming you already have a closeModal function to hide the modal
+
+
+
 function setupModalClose() {
     document.querySelector('.closeModal').addEventListener('click', function() {
         document.getElementById('seasonsEpisodesModal').classList.add('hidden');
