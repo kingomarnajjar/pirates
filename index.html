@@ -238,6 +238,45 @@ body {
             text-align: center;
         }
 
+        .media-label {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #ff6347;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.stream-btn, .cloudflare-btn {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.stream-btn {
+    background-color: #32cd32;
+    color: white;
+}
+
+.stream-btn:hover {
+    background-color: #28a745;
+}
+
+.cloudflare-btn {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.cloudflare-btn:hover {
+    background-color: #1669c1;
+}
+
+
 
     </style>
 </head>
@@ -362,51 +401,96 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent the default form submission
     const searchQuery = document.querySelector('[name="search"]').value.trim();
     if (searchQuery) {
-        searchMovies(searchQuery);
+        searchMedia(searchQuery); // Changed from searchMovies to searchMedia
     }
 });
 
-function searchMovies(query) {
-    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
 
-    fetch(url)
+// Unified search function for both movies and TV shows
+function searchMedia(query) {
+    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+    const movieUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+    const tvShowUrl = `https://api.themoviedb.org/3/search/tv?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+
+    // Clear previous results
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = '';
+
+    // Create section headers
+    const moviesHeader = document.createElement('h2');
+    moviesHeader.innerText = 'Movies';
+    const tvShowsHeader = document.createElement('h2');
+    tvShowsHeader.innerText = 'TV Shows';
+
+    // Create containers for movies and TV shows
+    const moviesSection = document.createElement('div');
+    const tvShowsSection = document.createElement('div');
+
+    // Append headers to the sections
+    moviesSection.appendChild(moviesHeader);
+    tvShowsSection.appendChild(tvShowsHeader);
+
+    // Append sections to the results container
+    resultsContainer.appendChild(moviesSection);
+    resultsContainer.appendChild(tvShowsSection);
+
+    // Search for movies
+    fetch(movieUrl)
         .then(response => response.json())
         .then(data => {
             if (data.results && data.results.length > 0) {
-                displaySearchResults(data.results);
+                displaySearchResults(data.results, 'movie', moviesSection);
             } else {
-                // Handle no results
-                document.getElementById('searchResults').innerHTML = '<p>No movies found.</p>';
+                moviesSection.innerHTML += '<p>No movies found.</p>';
             }
         })
         .catch(error => {
-            console.error('Error fetching search results:', error);
-            document.getElementById('searchResults').innerHTML = '<p>Error fetching search results.</p>';
+            console.error('Error fetching movie search results:', error);
+            moviesSection.innerHTML += '<p>Error fetching movie search results.</p>';
+        });
+
+    // Search for TV shows
+    fetch(tvShowUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                displaySearchResults(data.results, 'tv', tvShowsSection);
+            } else {
+                tvShowsSection.innerHTML += '<p>No TV shows found.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching TV show search results:', error);
+            tvShowsSection.innerHTML += '<p>Error fetching TV show search results.</p>';
         });
 }
 
-function displaySearchResults(movies) {
-    const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = ''; // Clear previous results
+function displaySearchResults(results, type, section) {
+    results.forEach(result => {
+        const mediaElement = document.createElement('div');
+        mediaElement.className = 'movie-tile p-2';
+        const mediaTypeLabel = type === 'movie' ? 'Movie' : 'TV Show';
+        const title = result.title || result.name || "Unknown Title";
+        const safeTitle = title.replace(/'/g, "\\'"); // Escape single quotes
+        const id = result.id || "Unknown ID";
+        const overview = result.overview || "No description available.";
 
-    movies.forEach(movie => {
-        const movieElement = document.createElement('div');
-        movieElement.className = 'movie-tile p-2';
-        movieElement.innerHTML = `
-            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
+        mediaElement.innerHTML = `
+            <img src="${result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : 'placeholder_image.jpg'}" alt="${title}" class="w-full h-auto rounded">
             <div>
-                <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
-                <p class="text-black-400 text-sm">${movie.overview}</p>
-                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="fetchAndStreamMovie('${movie.title}')">Stream</button>
+                <h3 class="text-xl font-semibold mt-2">${title}</h3>
+                <p class="text-black-400 text-sm">${overview}</p>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="fetchAndStreamMovie('${safeTitle}')">Stream</button>
                 <br>
                 <br>   
-                <button class="send-to-cloudflare-btn bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onclick="sendToCloudflare('${movie.id}')">Send to Cloudflare</button>
+                <button class="send-to-cloudflare-btn bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onclick="sendToCloudflare('${id}')">Send to Cloudflare</button>
             </div>
+            <div class="media-label">${mediaTypeLabel}</div>
         `;
-        resultsContainer.appendChild(movieElement);
+        section.appendChild(mediaElement);
     });
 }
+
 
 // Function to fetch and stream movie
 function fetchAndStreamMovie(title) {
