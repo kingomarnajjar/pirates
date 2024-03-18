@@ -581,6 +581,17 @@ function displayMovies(movies) {
     document.addEventListener('DOMContentLoaded', function() {
             fetchSpecificMovies();
             fetchSpecificTvShows();
+            
+              // Add event listener for keydown on the entire document
+    document.addEventListener('keydown', function(e) {
+        // Check if the '/' key is pressed and if no input is currently focused
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+            // Prevent the default action to avoid typing the '/' character
+            e.preventDefault();
+            // Focus on the search input box
+            document.querySelector('[name="search"]').focus();
+        }
+    });
         });
 
         function fetchSpecificMovies() {
