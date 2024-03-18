@@ -377,6 +377,7 @@ body {
     "The Beekeper": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/26655c062a4a5a6a30af30eb995bcf35/watch",
     "Patch Adams": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8f7e07357746722f23e667d7d901e295/watch",
     "Men Behind the Sun": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/b1f6df790c958d2769b1778366ca4d32/watch",
+    "Sound of Freedom": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/204299b9250e9104a340e2c2043577af/watch",
     // ... add more custom URLs as needed
 };
 
@@ -581,7 +582,7 @@ function displayMovies(movies) {
     document.addEventListener('DOMContentLoaded', function() {
             fetchSpecificMovies();
             fetchSpecificTvShows();
-            
+
               // Add event listener for keydown on the entire document
     document.addEventListener('keydown', function(e) {
         // Check if the '/' key is pressed and if no input is currently focused
@@ -596,7 +597,7 @@ function displayMovies(movies) {
 
         function fetchSpecificMovies() {
     // Add 'Sneakers', 'Barbie', and 'Oppenheimer' to the array
-    const moviesToFetch = ['Men Behind the Sun', 'Patch Adams', 'Lord of War', 'The Notorious Mr. Bout', 'Fury', 'American Psycho', 'John Wick Chapter 4', 'The Beekeper', 'Ri¢hie Ri¢h', 'Blank Check','El Topo', 'The Holy Mountain','Angel Heart','Katyn','Simon Birch', 'Drop Dead Fred', 'Sneakers', 'Barbie', 'Oppenheimer', 'The Heist Before Christmas'];
+    const moviesToFetch = ['Sound of Freedom', 'Men Behind the Sun', 'Patch Adams', 'Lord of War', 'The Notorious Mr. Bout', 'Fury', 'American Psycho', 'John Wick Chapter 4', 'The Beekeper', 'Ri¢hie Ri¢h', 'Blank Check','El Topo', 'The Holy Mountain','Angel Heart','Katyn','Simon Birch', 'Drop Dead Fred', 'Sneakers', 'Barbie', 'Oppenheimer', 'The Heist Before Christmas'];
     moviesToFetch.forEach(title => {
         searchMovie(title);
     });
