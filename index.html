@@ -293,7 +293,11 @@ body {
                     <iframe id="videoIframe" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
-        
+
+            <div id="randomMovies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 my-4">
+                <!-- Random movies will load here -->
+            </div>
+
                  <!-- Coming Soon Section -->
         <div id="comingSoon" class="my-8">
             <h2 class="text-2xl font-bold mb-4 text-left pl-4">Coming Soon</h2>
@@ -372,43 +376,75 @@ body {
                     modal.style.display = "block";
                     videoIframe.src = videoUrl;
                 }
+                document.addEventListener('DOMContentLoaded', function() {
+    fetchMovies(); // Fetches upcoming movies for the Coming Soon section
+    fetchRandomMovies(); // Fetches random movies for display on page load
+                  // Add event listener for keydown on the entire document
+                  document.addEventListener('keydown', function(e) {
+        // Check if the '/' key is pressed and if no input is currently focused
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+            // Prevent the default action to avoid typing the '/' character
+            e.preventDefault();
+            // Focus on the search input box
+            document.querySelector('[name="search"]').focus();
+        }
+    });
+});
 
-                function fetchMovies() {
-    fetch('https://api.themoviedb.org/3/movie/upcoming?api_key=8bb85bb00bf81f0ad511a7609d736c7f&language=en')
+function fetchRandomMovies() {
+    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`)
         .then(response => response.json())
         .then(data => {
-            displayComingSoon(data.results); // Display "Coming Soon" movies in slider
+            displayMovies(data.results, 'randomMovies'); // Ensure this uses the same display function
         })
-        .catch(error => console.error('Fetching movies failed:', error));
+        .catch(error => console.error('Error fetching random movies:', error));
 }
-function displayComingSoon(movies) {
-    const container = document.getElementById('comingSoon');
-    if (!container) {
-        console.error('Coming Soon container not found');
-        return; // Exit if container not found
-    }
-    console.log('Updating Coming Soon section with movies:', movies);
 
-    container.innerHTML = ''; // Clear existing content if any
+
+        function fetchMovies() {
+            fetch(`https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en`)
+                .then(response => response.json())
+                .then(data => displayComingSoon(data.results))
+                .catch(error => console.error('Fetching movies failed:', error));
+        }
+
+        function displayComingSoon(movies) {
+    const container = document.getElementById('comingSoon');
+    container.innerHTML = '';
     const slider = document.createElement('div');
     slider.className = 'slider-container flex overflow-x-auto pl-4 pr-2 py-2 space-x-4';
     movies.forEach(movie => {
-        if (movie.poster_path) { // Ensure there is a poster to display
-            const movieCard = document.createElement('div');
-            movieCard.className = 'slider-item';
-            movieCard.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
-                <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
-            `;
-            slider.appendChild(movieCard);
-        }
+        const movieCard = document.createElement('div');
+        movieCard.className = 'slider-item';
+        movieCard.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
+            <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
+            <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('https://vidsrc.to/embed/movie/${movie.id}')">Stream</button>
+        `;
+        slider.appendChild(movieCard);
     });
     container.appendChild(slider);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetchMovies();
-});
+function displayMovies(movies, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear previous results
+    movies.forEach(movie => {
+        if (movie.poster_path) { // Ensure there is a poster to display
+            const movieTile = document.createElement('div');
+            movieTile.className = 'movie-tile';
+            movieTile.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
+                <h3>${movie.title}</h3>
+                <p>${movie.overview || 'No description available.'}</p>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('https://vidsrc.to/embed/movie/${movie.id}')">Stream</button>
+            `;
+            container.appendChild(movieTile);
+        }
+    });
+}
+
+
 
                 
 
