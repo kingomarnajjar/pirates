@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Watermelon Movies 🍉</title>
+        <!-- Favicon link -->
+        <link rel="icon" type="image/x-icon"
+            href="favicon_watermelon_icon.ico">
+        <!-- Tailwind CSS CDN -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet">
+        <style>
+    /* Custom styles for movie tiles */
+    .movie-tile {
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .movie-tile:hover {
+            transform: scale(1.05);
+        }
+
+        /* Background gradient color */
+        body {
+            background: linear-gradient(to right, #32cd32 50%, #ff6347 50%);
+        }
+
+        /* RTL text alignment */
+        .movie-tile h3, .movie-tile p {
+            text-align: left;
+        }
+
+/* Fullscreen video player modal styles */
+.video-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 25%; /* Adjusted from 50% to 25% to move the modal up */
+    transform: translate(-50%, -25%); /* Adjusted the Y-translate value */
+    width: 100%; /* Adjust as needed */
+    height: 100%; /* Adjust as needed */
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+.video-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 30px; /* Changed from left to right */
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 1010; /* Ensure it's above the iframe */
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+
+.melon {
+   width: 6em;
+   height: 6em;
+   background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/21542/melon.svg) no-repeat no-repeat;
+   background-size: 48em; /* 6em * 8 */
+   background-position: 0% 0%;
+   
+   animation: melonSequence 0.8s steps(7) infinite reverse;
+   
+   margin: 0em auto;
+}
+
+@keyframes melonSequence {
+   from {
+      background-position: 0% 0%;
+   }
+   to {
+      background-position: 100% 0%;
+   }
+}
+
+.flex {
+    display: flex;
+    flex-direction: row-reverse; /* Reverse the order for RTL */
+}
+
+.search-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    text-align: right; /* For RTL */
+    font-size: 16px; /* Prevent zoom on mobile devices */
+}
+
+.search-btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    color: black;
+}
+
+.coming-soon-slider {
+    scroll-snap-type: x mandatory;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.slider-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.slider-item {
+    flex: 0 0 auto;
+    width: 200px; /* Adjust the width as per your design */
+    scroll-snap-align: start;
+}
+
+.slider-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+}
+
+/* Hide vertical scrollbar for the entire page */
+body, html {
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    max-height: 100vh; /* Optional: Limit the height of the body to the viewport height */
+}
+
+/* Hide horizontal scrollbar for the slider */
+.slider-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+/* Ensure the body or main container supports vertical scrolling if needed */
+body, .main-container {
+    overflow-x: hidden; /* Hide horizontal overflow */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+
+/* Hide scrollbar for aesthetic purposes */
+.coming-soon-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.coming-soon-slider {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}   
+
+/* Custom styles for movie tiles */
+.movie-tile {
+    transition: transform 0.3s;
+    cursor: pointer;
+    background: rgb(232, 222, 222); /* Set background to white */
+    border-radius: 15px; /* Rounded corners */
+    padding: 10px; /* Padding inside the tile */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
+}
+
+.movie-tile:hover {
+    transform: scale(1.05);
+}
+
+.movie-tile img {
+    border-radius: 10px; /* Rounded corners for images */
+    margin-bottom: 10px; /* Space between image and text */
+}
+
+/* Ensure text is visible against the white background */
+.movie-tile h3, .movie-tile p {
+    color: black; /* Dark text color for readability */
+    text-align: left;
+    margin: 5px 0; /* Margin for spacing */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for all text */
+}
+
+.hidden { display: none; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.min-h-screen { min-height: 100vh; }
+.rounded-lg { border-radius: 0.5rem; }
+.shadow-xl { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+.p-5 { padding: 1.25rem; }
+.bg-white { background-color: #ffffff; }
+.cursor-pointer { cursor: pointer; }
+.text-gray-700 { color: #4a5568; }
+
+
+.episode-link-hover:hover {
+            color: #4CAF50; /* Change the color to what fits your design */
+            text-decoration: underline; /* Example styling, modify as needed */
+        }
+
+
+.special-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        /* This ensures that the button is visually separate from other elements */
+        .special-container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .media-label {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #ff6347;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.stream-btn, .cloudflare-btn {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.stream-btn {
+    background-color: #32cd32;
+    color: white;
+}
+
+.stream-btn:hover {
+    background-color: #28a745;
+}
+
+.cloudflare-btn {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.cloudflare-btn:hover {
+    background-color: #1669c1;
+}
+
+
+
+    </style>
+</head>
+<body class="text-black">
+    <div class="container mx-auto px-4">
+        <h1 class="text-6xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
+        <h2 class="text-left">🤘.The Jews took hollywood...we're stealing it back</h2>
+        <div class="melon"></div>
+        <div class="relative text-gray-600">
+            <form id="searchForm" action="#">
+                <input type="search" name="search" placeholder="Search" class="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none">
+                <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+                    <!-- SVG code -->
+              <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;" xml:space="preserve" width="512px" height="512px">
+                <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"/>
+              </svg>
+            </button>
+          </div>
+        <br>
+
+        <div id="searchResults" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Search results will be displayed here -->
+        </div>
+
+
+        <div id="movies" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Movie tiles will be added here -->
+        </div>
+
+        
+        <!-- TV Shows Section -->
+        <div id="tvShows" class="my-8">
+            <h2 class="text-2xl font-bold mb-4 text-left pl-4">TV Shows</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" id="tvShowsContainer">
+                <!-- TV show tiles will be added here -->
+            </div>
+        </div>
+    </div>
+
+        <!-- Coming Soon Section -->
+        <div id="comingSoon" class="my-8">
+            <h2 class="text-2xl font-bold mb-4 text-left pl-4">Coming Soon</h2>
+            <div
+                class="slider-container flex overflow-x-auto pl-4 pr-2 py-2 space-x-4">
+                <!-- Slider items will be added here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Fullscreen video player modal -->
+        <div id="videoModal" class="video-modal">
+            <div class="video-modal-content">
+                <span class="close" onclick="closeVideoPlayer()">&times;</span>
+                <!-- Cloudflare Stream Video Player -->
+                <div id="videoContainer"
+                    style="position: relative; padding-top: 10%; padding-bottom: 10%; width: 100%; height: 40%;">
+                    <!-- Video iframe will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+<!-- Seasons and Episodes Modal -->
+<div id="seasonsEpisodesModal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="bg-white rounded-lg p-5 shadow-xl">
+        <div id="modalContent">
+          <!-- Dynamic content will be loaded here -->
+        </div>
+        <span class="closeModal cursor-pointer text-gray-700">&times; Close</span>
+      </div>
+    </div>
+  </div>
+  
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchMovies();
+            fetchTvShows();
+            setupModalClose();
+        });
+
+        const customURLs = {
+    "Finding the Money": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/05b8cf1167d12ced69e1f65b5afdeb47/watch",
+    "Simon Birch": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9bbbbb31d5eba50521e7f2c524ff38ac/watch",
+    "Drop Dead Fred": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/b909bb0aa6763c9832ad4be50eaeb4b7/watch",
+    "Sneakers": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f3191be6c61879b6fde28cbbe9a13eed/watch",
+    "Barbie": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/7e2087e531ef364ba1eb7d9974b2ca3b/watch",
+    "Oppenheimer": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/c8a2ff260b91f7998e72b098cf0fd8f2/watch",
+    "Angel Heart": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6166aadd3d82cebfd6242079f39c316e/watch",
+    "El Topo": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/9046cea25793e43d5dee945e0d8d4d84/watch",
+    "The Holy Mountain": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/331ad3d67b0a56f6a2dae7630b1eec72/watch",
+    "Katyn": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f0f5ac7fa8d3b147cced19d265118bc4/watch",
+    "Blank Check": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/075f8e99b0322088bcde884418e5e861/watch",
+    "Ri¢hie Ri¢h": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/7cbcf7a43ba2b11dc683365cf2b889a2/watch",
+    "The Notorious Mr. Bout": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/69377c0f9a20de89c1a1d479dd9435f8/watch",
+    "Lord of War": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/87cef82fa339cbf917bf39157aff5156/watch",
+    "John Wick Chapter 4": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/f5ac71306b7c77e75020f455f5ab4f94/watch",
+    "Fury": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/67f60da5edc4fcc261f468d078e1c8ea/watch",
+    "American Psycho": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/0bfbb7ec044b0c0a31a1295b375381fe/watch",
+    "The Beekeper": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/26655c062a4a5a6a30af30eb995bcf35/watch",
+    "Patch Adams": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8f7e07357746722f23e667d7d901e295/watch",
+    "Men Behind the Sun": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/b1f6df790c958d2769b1778366ca4d32/watch",
+    "Sound of Freedom": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/204299b9250e9104a340e2c2043577af/watch",
+    "Argylle": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/4f162e6e9fffb825a512e7de750ac2a5/watch",
+    "Buena Vista Social Club: Adios": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/761a9f6f548b7660e7be32ad1925a4e9/watch",
+    "Buena Vista Social Club": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/05fb17f17b8482faa5e7c182eb6b823d/watch",
+    "RED": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/bec8eaa681361d70bc061b0b319e2961/watch",
+    "La la land": "",
+    "Monkey Man": "https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/75705d2e1222af3327b61dd600e941f1/watch",
+    // ... add more custom URLs as needed
+};
+
+const customTVShowURLs = {
+        "Stranger Things": "https://example.com/stranger-things",
+        "The Witcher": "https://example.com/the-witcher",
+        "Breaking Bad": "https://example.com/breaking-bad",
+        "Hoarders": "",
+        // Add more custom URLs for TV shows here...
+    };
+
+        function mergeCustomURLs(movies, customURLs) {
+    return movies.map(movie => {
+        if (customURLs[movie.title]) {
+            return {...movie, customURL: customURLs[movie.title]};
+        }
+        return movie;
+    });
+}
+
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent the default form submission
+    const searchQuery = document.querySelector('[name="search"]').value.trim();
+    if (searchQuery) {
+        searchMedia(searchQuery); // Changed from searchMovies to searchMedia
+    }
+});
+
+
+// Unified search function for both movies and TV shows
+function searchMedia(query) {
+    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+    const movieUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+    const tvShowUrl = `https://api.themoviedb.org/3/search/tv?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+
+    // Clear previous results
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = '';
+
+    // Create section headers
+    const moviesHeader = document.createElement('h2');
+    moviesHeader.innerText = 'Movies';
+    const tvShowsHeader = document.createElement('h2');
+    tvShowsHeader.innerText = 'TV Shows';
+
+    // Create containers for movies and TV shows
+    const moviesSection = document.createElement('div');
+    const tvShowsSection = document.createElement('div');
+
+    // Append headers to the sections
+    moviesSection.appendChild(moviesHeader);
+    tvShowsSection.appendChild(tvShowsHeader);
+
+    // Append sections to the results container
+    resultsContainer.appendChild(moviesSection);
+    resultsContainer.appendChild(tvShowsSection);
+
+    // Search for movies
+    fetch(movieUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                displaySearchResults(data.results, 'movie', moviesSection);
+            } else {
+                moviesSection.innerHTML += '<p>No movies found.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching movie search results:', error);
+            moviesSection.innerHTML += '<p>Error fetching movie search results.</p>';
+        });
+
+    // Search for TV shows
+    fetch(tvShowUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                displaySearchResults(data.results, 'tv', tvShowsSection);
+            } else {
+                tvShowsSection.innerHTML += '<p>No TV shows found.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching TV show search results:', error);
+            tvShowsSection.innerHTML += '<p>Error fetching TV show search results.</p>';
+        });
+}
+
+function displaySearchResults(results, type, section) {
+    results.forEach(result => {
+        const mediaElement = document.createElement('div');
+        mediaElement.className = 'movie-tile p-2';
+        const mediaTypeLabel = type === 'movie' ? 'Movie' : 'TV Show';
+        const title = result.title || result.name || "Unknown Title";
+        const safeTitle = title.replace(/'/g, "\\'"); // Escape single quotes
+        const id = result.id || "Unknown ID";
+        const overview = result.overview || "No description available.";
+
+        mediaElement.innerHTML = `
+            <img src="${result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : 'placeholder_image.jpg'}" alt="${title}" class="w-full h-auto rounded">
+            <div>
+                <h3 class="text-xl font-semibold mt-2">${title}</h3>
+                <p class="text-black-400 text-sm">${overview}</p>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="fetchAndStreamMovie('${safeTitle}')">Stream</button>
+                <br>
+                <br>   
+                <button class="send-to-cloudflare-btn bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onclick="sendToCloudflare('${id}')">Send to Cloudflare</button>
+            </div>
+            <div class="media-label">${mediaTypeLabel}</div>
+        `;
+        section.appendChild(mediaElement);
+    });
+}
+
+
+// Function to fetch and stream movie
+function fetchAndStreamMovie(title) {
+    // Here, you would send the title to your Cloudflare Worker
+    // Assuming your Worker is set up to handle requests at /stream?title=<movie title>
+    const workerUrl = `https://production.search-query-cors-proxy.omar-c29.workers.dev/stream?filter=${encodeURIComponent(title)}`;
+
+    // Open the video modal and set the iframe src to the worker URL
+    document.getElementById('videoContainer').innerHTML = `<iframe src="${workerUrl}" style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;" allowfullscreen="true"></iframe>`;
+    openVideoPlayer();
+}
+
+function sendToCloudflare(movieId) {
+    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+    fetch(`https://api.themoviedb.org/3/movie/${movieId}/external_ids?api_key=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.imdb_id) {
+                const imdbId = data.imdb_id;
+                // Replace YOUR_CLOUDFLARE_WORKER_URL with your actual Cloudflare Worker URL
+                const url = `https://addtorrentstoqbitorrent.omar-c29.workers.dev/?imdbID=${imdbId}`;
+                // Make a GET request to the Cloudflare Worker
+                fetch(url).then(response => {
+                    if (response.ok) {
+                        console.log(`Successfully sent IMDb ID ${imdbId} to Cloudflare Worker.`);
+                        // Process response from Cloudflare Worker here, if necessary
+                    } else {
+                        console.error('Failed to send IMDb ID to Cloudflare Worker. Response status:', response.status);
+                    }
+                }).catch(error => console.error('Error sending IMDb ID to Cloudflare Worker:', error));
+            } else {
+                console.error('IMDb ID not found for movie ID:', movieId);
+            }
+        })
+        .catch(error => console.error('Error fetching IMDb ID:', error));
+}
+
+
+// Add this function to update the video player's URL and display it
+function updateVideoPlayerAndShow(url) {
+    const videoContainer = document.getElementById('videoContainer');
+    videoContainer.innerHTML = `<iframe src="${url}" style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`;
+    openVideoPlayer();
+}
+
+
+function displayMovies(movies) {
+    const moviesContainer = document.getElementById('movies');
+    movies.forEach(movie => {
+        const movieElement = document.createElement('div');
+        movieElement.className = 'movie-tile p-2';
+        movieElement.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="w-full h-auto rounded">
+            <h3 class="text-xl font-semibold mt-2">${movie.title}</h3>
+            <p class="text-black-400 text-sm">${movie.overview}</p>
+        `;
+
+        const customURL = customURLs[movie.title];
+        if (customURL) {
+            movieElement.addEventListener('click', function() {
+                updateVideoPlayerAndShow(customURL);
+            });
+        }
+
+        moviesContainer.appendChild(movieElement);
+    });
+}
+
+
+
+
+
+    function openVideoPlayer() {
+        document.getElementById('videoModal').style.display = 'block';
+    }
+
+    function closeVideoPlayer() {
+    document.getElementById('videoModal').style.display = 'none';
+    // Correctly target the iframe and stop the video by resetting its 'src'
+    var iframe = document.getElementById('videoContainer').querySelector('iframe');
+    if (iframe) {
+        var iframeSrc = iframe.src;
+        iframe.src = iframeSrc; // This will effectively reload (and thus stop) the video
+    }
+}
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+            fetchSpecificMovies();
+            fetchSpecificTvShows();
+
+              // Add event listener for keydown on the entire document
+    document.addEventListener('keydown', function(e) {
+        // Check if the '/' key is pressed and if no input is currently focused
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+            // Prevent the default action to avoid typing the '/' character
+            e.preventDefault();
+            // Focus on the search input box
+            document.querySelector('[name="search"]').focus();
+        }
+    });
+        });
+
+        function fetchSpecificMovies() {
+    // Add 'Sneakers', 'Barbie', and 'Oppenheimer' to the array
+    const moviesToFetch = ['Monkey Man','La la land', 'Buena Vista Social Club', 'RED', 'Buena Vista Social Club: Adios', 'Argylle', 'Sound of Freedom', 'Men Behind the Sun', 'Patch Adams', 'Lord of War', 'The Notorious Mr. Bout', 'Fury', 'American Psycho', 'John Wick Chapter 4', 'The Beekeper', 'Ri¢hie Ri¢h', 'Blank Check','El Topo', 'The Holy Mountain','Angel Heart','Katyn','Simon Birch', 'Drop Dead Fred', 'Sneakers', 'Barbie', 'Oppenheimer', 'Finding the Money'];
+    moviesToFetch.forEach(title => {
+        searchMovie(title);
+    });
+    }
+        function searchMovie(movieTitle) {
+            const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Replace with your actual API key
+            const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(movieTitle)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results.length > 0) {
+                        const movie = data.results[0]; // Assuming the first result is the desired one
+                        displayMovies([movie]); // Reusing your existing function to display the movie
+                    } else {
+                        console.log(`Movie not found: ${movieTitle}`);
+                    }
+                })
+                .catch(error => console.error(`Fetching movie failed: ${movieTitle}`, error));
+        }
+
+        
+        function fetchMovies() {
+    fetch('https://api.themoviedb.org/3/movie/popular?api_key=8bb85bb00bf81f0ad511a7609d736c7f&language=en')
+        .then(response => response.json())
+        .then(data => {
+            // displayMovies(data.results); // Display movies in grid
+            displayComingSoon(data.results); // Display movies in "Coming Soon" slider
+        })
+        .catch(error => console.error('Fetching movies failed:', error));
+}
+
+            function fetchTvShows() {
+                const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+                const url = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=en-US&page=1`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayTvShows(data.results);
+                    })
+                    .catch(error => console.error('Error fetching TV shows:', error));
+            }
+
+            function fetchSpecificTvShows() {
+    const tvShowsToFetch = ['Stranger Things', 'The Witcher', 'Breaking Bad', 'Hoarders'];
+    tvShowsToFetch.forEach(title => {
+        searchTvShow(title);
+    });
+}
+
+
+function searchTvShow(tvShowTitle) {
+    const apiKey = '8bb85bb00bf81f0ad511a7609d736c7f'; // Use your actual API key
+    const url = `https://api.themoviedb.org/3/search/tv?api_key=${apiKey}&query=${encodeURIComponent(tvShowTitle)}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length > 0) {
+                const tvShow = data.results[0]; // Assuming the first result is the desired one
+                displayTvShows([tvShow]); // Adjust this if necessary to handle multiple shows
+            } else {
+                console.log(`TV Show not found: ${tvShowTitle}`);
+            }
+        })
+        .catch(error => console.error(`Fetching TV show failed: ${tvShowTitle}`, error));
+}
+
+function displayTvShows(tvShows) {
+    const tvShowsContainer = document.getElementById('tvShowsContainer');
+    const imageUrlBase = 'https://image.tmdb.org/t/p/w500'; // Base URL for TMDB images
+
+    tvShows.forEach(tvShow => {
+        const tvShowElement = document.createElement('div');
+        tvShowElement.className = 'movie-tile p-2';
+        tvShowElement.innerHTML = `
+            <img src="${imageUrlBase}${tvShow.poster_path}" alt="${tvShow.name}" class="w-full h-auto rounded">
+            <h3 class="text-xl font-semibold mt-2">${tvShow.name}</h3>
+            <p class="text-black-400 text-sm">${tvShow.overview}</p>
+        `;
+
+        // Here's where you'd add any specific logic for "Hoarders" or other shows
+        if (tvShow.name === "Hoarders") {
+            tvShowElement.addEventListener('click', function() {
+                displayHoardersSeasonsEpisodes();
+            });
+        }
+
+        tvShowsContainer.appendChild(tvShowElement);
+    });
+}
+
+
+function displayHoardersSeasonsEpisodes() {
+    const modal = document.getElementById('seasonsEpisodesModal');
+    const content = modal.querySelector('#modalContent');
+    content.innerHTML = `
+        <h2>Hoarders - Seasons and Episodes</h2>
+        <!-- Populate with your Hoarders seasons and episodes links -->
+        <div>Season 15: 
+            <ul>
+                <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/e23ced1cf3a3186443566e6c7e9e5956/watch" target="_blank">Episode 1</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8fceb5f380ceff0fa15ebfac4b5662b1/watch" target="_blank">Episode 2</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/3ce05e8aeaa871c30d68d99158f5d9ff/watch" target="_blank">Episode 3</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/4898ab901a7d9fdcf2092bfbf55cd466/watch" target="_blank">Episode 4</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/5d7aef6b070f2109b9475d87e6a33bc5/watch" target="_blank">Episode 5</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/6980d3088f0fd9e44b2add9f19854071/watch" target="_blank">Episode 7</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/8e25d3e5ed07c7018d51c2e4f797319f/watch" target="_blank">Episode 8</a></li>
+    <li><a class="episode-link-hover" href="https://customer-1sg29b2sx40xqfiq.cloudflarestream.com/d08f3bc033e59b7673c17ed77b20c5af/watch" target="_blank">Episode 10</a></li>
+                <!-- Add more episodes -->
+            </ul>
+        </div>
+    `;
+    modal.classList.remove('hidden');
+}
+
+// Assuming you already have a closeModal function to hide the modal
+
+
+
+function setupModalClose() {
+    document.querySelector('.closeModal').addEventListener('click', function() {
+        document.getElementById('seasonsEpisodesModal').classList.add('hidden');
+    });
+}
+
+// Function to display seasons and episodes modal for a TV show
+function displaySeasonsAndEpisodesModal(tvShowId) {
+    const modal = document.getElementById('seasonsEpisodesModal');
+    const content = modal.querySelector('#modalContent');
+    content.innerHTML = '<p>Loading...</p>'; // Placeholder content
+
+    fetchSeasonsAndEpisodes(tvShowId);
+    modal.classList.remove('hidden'); // Show the modal
+}
+
+// Fetch seasons and episodes based on TV show ID
+function fetchSeasonsAndEpisodes(tvShowId) {
+    const url = `https://api.themoviedb.org/3/tv/${tvShowId}?api_key=YOUR_API_KEY&append_to_response=seasons`;
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        const modalContent = document.getElementById('modalContent');
+        modalContent.innerHTML = ''; // Clear modal content
+
+        data.seasons.forEach(season => {
+            const seasonButton = document.createElement('button');
+            seasonButton.textContent = `Season ${season.season_number}`;
+            seasonButton.addEventListener('click', () => fetchEpisodes(tvShowId, season.season_number));
+            modalContent.appendChild(seasonButton);
+        });
+    })
+    .catch(error => console.error('Fetching seasons failed:', error));
+}
+
+// Fetch episodes for a specific season of a TV show
+function fetchEpisodes(tvShowId, seasonNumber) {
+    const url = `https://api.themoviedb.org/3/tv/${tvShowId}/season/${seasonNumber}?api_key=YOUR_API_KEY`;
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        const modalContent = document.getElementById('modalContent');
+        modalContent.innerHTML = `<h3>Season ${seasonNumber} Episodes:</h3>`; // Clear modal content for episodes list
+
+        data.episodes.forEach(episode => {
+            modalContent.innerHTML += `<p>Episode ${episode.episode_number}: ${episode.name}</p>`;
+        });
+    })
+    .catch(error => console.error(`Fetching episodes for season ${seasonNumber} failed:`, error));
+}
+
+
+
+
+
+function displayComingSoon(movies) {
+    const comingSoonContainer = document.querySelector('.slider-container');
+    movies.forEach(movie => {
+        const sliderItem = document.createElement('div');
+        sliderItem.className = 'slider-item p-2 rounded-lg';
+        sliderItem.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
+            <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
+        `;
+        comingSoonContainer.appendChild(sliderItem);
+    });
+}
+
+
+
+</script>
+    </body>
+</html>
