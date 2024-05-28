@@ -312,21 +312,21 @@ body {
 
 
                 document.getElementById('searchForm').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const searchQuery = document.querySelector('[name="search"]').value.trim();
-                    if (searchQuery) {
-                        searchMedia(searchQuery);
-                    }
+            e.preventDefault();
+            const searchQuery = document.querySelector('[name="search"]').value.trim();
+            if (searchQuery) {
+                searchMedia(searchQuery);
+            }
+        });
+
+        function searchMedia(query) {
+            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displaySearchResults(data.results, 'searchResults');
                 });
-        
-                function searchMedia(query) {
-                    const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
-                    fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            displaySearchResults(data.results, 'searchResults');
-                        });
-                }
+        }
 
 
                 function displaySearchResults(results, containerSee) {
@@ -344,7 +344,7 @@ body {
                 <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
                 <h3>${title}</h3>
                 <p>${overview}</p>
-                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('https://vidsrc.to/embed/movie/${imdbId}')">Stream</button>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('https://vidsrc.to/embed/${result.media_type}/${imdbId}')">Stream</button>
             `;
             container.appendChild(movieTile);
         }
