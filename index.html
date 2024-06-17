@@ -163,10 +163,12 @@ body {
     top: 10%; /* Adjusted for better vertical alignment */
     left: 5%; /* Centering the modal on mobile */
     width: 90%; /* Full width on mobile */
-    background-color: #fefefe;
+    background-color: gold;
     padding: 20px;
     border: 1px solid #888;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for better visibility */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow for better visibility */
+    border-radius: 25px;
+    border: 7px solid black;
 }
 
 .close {
@@ -264,10 +266,10 @@ body {
 }
 
 .share-btn {
-    background-color: #FFD700; /* Gold color */
+    background-color: skyblue; /* Gold color */
     color: white;
     padding: 5px 10px;
-    margin: 5px;
+    margin: 16px 5px 5px 0px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -279,7 +281,7 @@ body {
 }
 
 .share-btn:hover {
-    background-color: #FFC107; /* Slightly lighter gold for hover effect */
+    background-color: rgb(79, 205, 255); /* Slightly lighter gold for hover effect */
 }
 
 .popcorn {
@@ -330,7 +332,9 @@ body {
             <div id="videoModal" class="video-modal">
                 <div class="video-modal-content">
                     <span class="close">&times;</span>
+                    <div style="border-radius: 10px; width: 100%; overflow: hidden;">  
                     <iframe id="videoIframe" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
+                    </div>
                     <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href)">
                         Pass the<span class="popcorn">🍿</span>
                     </button>
