@@ -262,6 +262,46 @@ body {
 .stream-btn:hover {
     background-color: #28a745;
 }
+
+.share-btn {
+    background-color: #FFD700; /* Gold color */
+    color: white;
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adding shadow to text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-btn:hover {
+    background-color: #FFC107; /* Slightly lighter gold for hover effect */
+}
+
+.popcorn {
+    margin-left: 5px;  /* Adds space between the text and emoji */
+    display: inline-block; /* Allows transformation effects */
+    animation: popcornBounce 1s ease-in-out infinite;
+}
+
+@keyframes popcornBounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        filter: drop-shadow(0 0 0 transparent);
+    }
+    50% {
+        transform: translateY(-10px) rotate(360deg);
+        filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); /* Add a shadow to enhance the effect */
+    }
+}
+
+
+
+
     </style>
 </head>
 <body class="text-black">
@@ -291,6 +331,11 @@ body {
                 <div class="video-modal-content">
                     <span class="close">&times;</span>
                     <iframe id="videoIframe" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
+                    <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href)">
+                        Pass the<span class="popcorn">🍿</span>
+                    </button>
+                    
+                    
                 </div>
             </div>
 
@@ -329,8 +374,8 @@ body {
         }
 
 
-                function displaySearchResults(results, containerSee) {
-    const container = document.getElementById(containerSee);
+        function displaySearchResults(results, containerId) {
+    const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear previous results
     results.forEach(result => {
         if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
@@ -338,13 +383,15 @@ body {
             const imdbId = result.id; // Assuming it fetches the correct ID
             const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
             const overview = result.overview || 'No description available.';
+            const mediaType = result.media_type;
+
             const movieTile = document.createElement('div');
             movieTile.className = 'movie-tile';
             movieTile.innerHTML = `
                 <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
                 <h3>${title}</h3>
                 <p>${overview}</p>
-                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('https://vidsrc.to/embed/${result.media_type}/${imdbId}')">Stream</button>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('${mediaType}', '${imdbId}')">Stream</button>
             `;
             container.appendChild(movieTile);
         }
@@ -372,10 +419,26 @@ body {
                     }
                 }
         
-                function openModal(videoUrl) {
-                    modal.style.display = "block";
-                    videoIframe.src = videoUrl;
-                }
+                function openModal(mediaType, imdbId) {
+    let baseUrl = 'https://vidsrc.to/embed/';
+    if (mediaType === 'movie') {
+        baseUrl += 'movie/';
+    } else if (mediaType === 'tv') {
+        baseUrl += 'tv/';
+    } else {
+        console.error('Unsupported media type');
+        return;
+    }
+    const videoUrl = baseUrl + imdbId;
+    modal.style.display = "block";
+    videoIframe.src = videoUrl;
+
+    // Update the URL in the address bar
+    const newUrl = `${window.location.pathname}?type=${mediaType}&id=${imdbId}`;
+    window.history.pushState({ path: newUrl }, '', newUrl);
+}
+
+
                 document.addEventListener('DOMContentLoaded', function() {
     fetchMovies(); // Fetches upcoming movies for the Coming Soon section
     fetchRandomMovies(); // Fetches random movies for display on page load
@@ -389,6 +452,14 @@ body {
             document.querySelector('[name="search"]').focus();
         }
     });
+
+        // Check URL parameters and open modal if applicable
+        const urlParams = new URLSearchParams(window.location.search);
+    const mediaType = urlParams.get('type');
+    const imdbId = urlParams.get('id');
+    if (mediaType && imdbId) {
+        openModal(mediaType, imdbId);
+    }
 });
 
 function fetchRandomMovies() {
@@ -424,8 +495,8 @@ function fetchRandomMovies() {
         slider.appendChild(movieCard);
     });
     container.appendChild(slider);
-}
 
+}
 function displayMovies(movies, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear previous results
@@ -437,7 +508,7 @@ function displayMovies(movies, containerId) {
                 <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
                 <h3>${movie.title}</h3>
                 <p>${movie.overview || 'No description available.'}</p>
-                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('https://vidsrc.to/embed/movie/${movie.id}')">Stream</button>
+                <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('movie', '${movie.id}')">Stream</button>
             `;
             container.appendChild(movieTile);
         }
