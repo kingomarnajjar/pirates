@@ -19,205 +19,194 @@
         body {
             background: linear-gradient(to right, #32cd32 50%, #ff6347 50%);
         }
-
-        
-.melon {
-   width: 6em;
-   height: 6em;
-   background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/21542/melon.svg) no-repeat no-repeat;
-   background-size: 48em; /* 6em * 8 */
-   background-position: 0% 0%;
-   
-   animation: melonSequence 0.8s steps(7) infinite reverse;
-   
-   margin: 0em auto;
-}
-
-@keyframes melonSequence {
-   from {
-      background-position: 0% 0%;
-   }
-   to {
-      background-position: 100% 0%;
-   }
-}
-
-.flex {
-    display: flex;
-    flex-direction: row-reverse; /* Reverse the order for RTL */
-}
-
-.search-input {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    text-align: right; /* For RTL */
-    font-size: 16px; /* Prevent zoom on mobile devices */
-}
-
-.search-btn {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    color: black;
-}
-
-.coming-soon-slider {
-    scroll-snap-type: x mandatory;
-    overflow-x: scroll;
-    -webkit-overflow-scrolling: touch;
-}
-
-.slider-container {
-    display: flex;
-    gap: 1rem;
-}
-
-.slider-item {
-    flex: 0 0 auto;
-    width: 200px; /* Adjust the width as per your design */
-    scroll-snap-align: start;
-}
-
-.slider-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 0.5rem;
-}
-
-/* Hide vertical scrollbar for the entire page */
-body, html {
-    overflow-y: hidden; /* Hide vertical scrollbar */
-    max-height: 100vh; /* Optional: Limit the height of the body to the viewport height */
-}
-
-/* Hide horizontal scrollbar for the slider */
-.slider-container {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-
-.slider-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
-}
-
-/* Ensure the body or main container supports vertical scrolling if needed */
-body, .main-container {
-    overflow-x: hidden; /* Hide horizontal overflow */
-    overflow-y: auto; /* Enable vertical scrolling if content overflows */
-}
-
-/* Hide scrollbar for aesthetic purposes */
-.coming-soon-slider::-webkit-scrollbar {
-    display: none;
-}
-
-.coming-soon-slider {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}   
-
-/* Custom styles for movie tiles */
-.movie-tile {
-    transition: transform 0.3s;
-    cursor: pointer;
-    background: rgb(232, 222, 222); /* Set background to white */
-    border-radius: 15px; /* Rounded corners */
-    padding: 10px; /* Padding inside the tile */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
-}
-
-.movie-tile:hover {
-    transform: scale(1.05);
-}
-
-.movie-tile img {
-    border-radius: 10px; /* Rounded corners for images */
-    margin-bottom: 10px; /* Space between image and text */
-}
-
-/* Ensure text is visible against the white background */
-.movie-tile h3, .movie-tile p {
-    color: black; /* Dark text color for readability */
-    text-align: left;
-    margin: 5px 0; /* Margin for spacing */
-    font-family: 'Courier New', Courier, monospace; /* Monospace font */
-}
-
-body {
-    font-family: 'Courier New', Courier, monospace; /* Monospace font for all text */
-}
-
-.video-modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-.video-modal-content {
-    position: fixed;
-    top: 10%; /* Adjusted for better vertical alignment */
-    left: 5%; /* Centering the modal on mobile */
-    width: 90%; /* Full width on mobile */
-    background-color: gold;
-    padding: 20px;
-    border: 1px solid #888;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow for better visibility */
-    border-radius: 25px;
-    border: 7px solid black;
-}
-
-.close {
-    position: absolute;
-    right: 36px; /* More accessible position */
-    top: 20px;
-    font-size: 50px; /* Larger clickable area */
-    color: #aaa;
-    cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: deeppink;
-    text-decoration: none;
-}
-
-
-        @media (max-width: 600px) {
-    .video-modal-content {
-        padding: 10px;
-        font-size: 14px; /* Smaller font size for very small devices */
-    }
-    .close {
-        font-size: 24px; /* Smaller close button on very small devices */
-    }
-}
-
-
-.hidden { display: none; }
-.flex { display: flex; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.min-h-screen { min-height: 100vh; }
-.rounded-lg { border-radius: 0.5rem; }
-.shadow-xl { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
-.p-5 { padding: 1.25rem; }
-.bg-white { background-color: #ffffff; }
-.cursor-pointer { cursor: pointer; }
-.text-gray-700 { color: #4a5568; }
-
-
-.episode-link-hover:hover {
-            color: #4CAF50; /* Change the color to what fits your design */
-            text-decoration: underline; /* Example styling, modify as needed */
+        .video-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
         }
 
+        .video-modal-content {
+            position: fixed;
+            top: 10%; /* Adjusted for better vertical alignment */
+            left: 5%; /* Centering the modal on mobile */
+            width: 90%; /* Full width on mobile */
+            background: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapercave.com%2Fwp%2Fwp3400754.jpg&f=1&nofb=1&ipt=e6ef828ce4ca397f27b57b585f1382ded672498ebfcdc63466a8fdc6507a5082&ipo=images') no-repeat center center;
+            background-size: cover;
+            padding: 20px;
+            border: 1px solid #888;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow for better visibility */
+            border-radius: 25px;
+            border: 4px solid black;
+        }
 
-.special-button {
+        .close {
+            position: absolute;
+            right: 36px; /* More accessible position */
+            top: 20px;
+            font-size: 50px; /* Larger clickable area */
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: deeppink;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .video-modal-content {
+                padding: 10px;
+                font-size: 14px; /* Smaller font size for very small devices */
+            }
+            .close {
+                font-size: 24px; /* Smaller close button on very small devices */
+            }
+        }
+
+        .hidden { display: none; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .min-h-screen { min-height: 100vh; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .shadow-xl { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        .p-5 { padding: 1.25rem; }
+        .bg-white { background-color: #ffffff; }
+        .cursor-pointer { cursor: pointer; }
+        .text-gray-700 { color: #4a5568; }
+
+        /* Other custom styles */
+        .melon {
+            width: 6em;
+            height: 6em;
+            background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/21542/melon.svg) no-repeat no-repeat;
+            background-size: 48em; /* 6em * 8 */
+            background-position: 0% 0%;
+            animation: melonSequence 0.8s steps(7) infinite reverse;
+            margin: 0em auto;
+        }
+
+        @keyframes melonSequence {
+            from {
+                background-position: 0% 0%;
+            }
+            to {
+                background-position: 100% 0%;
+            }
+        }
+
+        .flex {
+            display: flex;
+            flex-direction: row-reverse; /* Reverse the order for RTL */
+        }
+
+        .search-input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            text-align: right; /* For RTL */
+            font-size: 16px; /* Prevent zoom on mobile devices */
+        }
+
+        .search-btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            color: black;
+        }
+
+        .coming-soon-slider {
+            scroll-snap-type: x mandatory;
+            overflow-x: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slider-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .slider-item {
+            flex: 0 0 auto;
+            width: 200px; /* Adjust the width as per your design */
+            scroll-snap-align: start;
+        }
+
+        .slider-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+
+        /* Hide vertical scrollbar for the entire page */
+        body, html {
+            overflow-y: hidden; /* Hide vertical scrollbar */
+            max-height: 100vh; /* Optional: Limit the height of the body to the viewport height */
+        }
+
+        /* Hide horizontal scrollbar for the slider */
+        .slider-container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .slider-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+
+        /* Ensure the body or main container supports vertical scrolling if needed */
+        body, .main-container {
+            overflow-x: hidden; /* Hide horizontal overflow */
+            overflow-y: auto; /* Enable vertical scrolling if content overflows */
+        }
+
+        /* Hide scrollbar for aesthetic purposes */
+        .coming-soon-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .coming-soon-slider {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Custom styles for movie tiles */
+        .movie-tile {
+            transition: transform 0.3s;
+            cursor: pointer;
+            background: rgb(232, 222, 222); /* Set background to white */
+            border-radius: 15px; /* Rounded corners */
+            padding: 10px; /* Padding inside the tile */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
+        }
+
+        .movie-tile:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-tile img {
+            border-radius: 10px; /* Rounded corners for images */
+            margin-bottom: 10px; /* Space between image and text */
+        }
+
+        /* Ensure text is visible against the white background */
+        .movie-tile h3, .movie-tile p {
+            color: black; /* Dark text color for readability */
+            text-align: left;
+            margin: 5px 0; /* Margin for spacing */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace; /* Monospace font for all text */
+        }
+
+        .special-button {
             background-color: #4CAF50; /* Green */
             border: none;
             color: white;
@@ -237,72 +226,69 @@ body {
         }
 
         .media-label {
-    display: inline-block;
-    padding: 4px 8px;
-    background-color: #ff6347;
-    color: #fff;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #ff6347;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
 
-.stream-btn, .cloudflare-btn {
-    padding: 5px 10px;
-    margin: 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+        .stream-btn, .cloudflare-btn {
+            padding: 5px 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-.stream-btn {
-    background-color: #32cd32;
-    color: white;
-}
+        .stream-btn {
+            background-color: #32cd32;
+            color: white;
+        }
 
-.stream-btn:hover {
-    background-color: #28a745;
-}
+        .stream-btn:hover {
+            background-color: #28a745;
+        }
 
-.share-btn {
-    background-color: skyblue; /* Gold color */
-    color: white;
-    padding: 5px 10px;
-    margin: 16px 5px 5px 0px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adding shadow to text */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
+        .share-btn {
+            background-color: rgb(250, 217, 0); /* Gold color */
+            color: black;
+            padding: 5px 10px;  
+            margin: 16px 5px 5px 0px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adding shadow to text */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.share-btn:hover {
-    background-color: rgb(79, 205, 255); /* Slightly lighter gold for hover effect */
-}
+        .share-btn:hover {
+            background-color: rgb(255, 217, 0); /* Slightly lighter gold for hover effect */
+        }
 
-.popcorn {
-    margin-left: 5px;  /* Adds space between the text and emoji */
-    display: inline-block; /* Allows transformation effects */
-    animation: popcornBounce 1s ease-in-out infinite;
-}
+        .popcorn {
+            margin-left: 5px;  /* Adds space between the text and emoji */
+            display: inline-block; /* Allows transformation effects */
+            animation: popcornBounce 1s ease-in-out infinite;
+        }
 
-@keyframes popcornBounce {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-        filter: drop-shadow(0 0 0 transparent);
-    }
-    50% {
-        transform: translateY(-10px) rotate(360deg);
-        filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); /* Add a shadow to enhance the effect */
-    }
-}
-
-
-
+        @keyframes popcornBounce {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                filter: drop-shadow(0 0 0 transparent);
+            }
+            50% {
+                transform: translateY(-10px) rotate(360deg);
+                filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); /* Add a shadow to enhance the effect */
+            }
+        }   
 
     </style>
 </head>
