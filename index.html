@@ -19,6 +19,38 @@
         body {
             background: linear-gradient(to right, #32cd32 50%, #ff6347 50%);
         }
+        .dark-mode body {
+            background: linear-gradient(to right, #000000 50%, #333333 50%);
+            color: white;
+        }
+
+        .translate-x-full {
+        transform: translateX(100%);
+    }
+.dark-mode .movie-tile {
+    background: #444;
+    color: white;
+}
+
+.dark-mode .search-input {
+    background-color: #333;
+    color: white;
+}
+
+.dark-mode .video-modal-content {
+        background-color: rgba(0, 0, 0, 0.8);
+        background: 0;
+
+    }
+
+.dark-mode .stream-btn {
+    background-color: #555;
+}
+
+.dark-mode .stream-btn:hover {
+    background-color: #666;
+}
+
         .video-modal {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
@@ -286,7 +318,7 @@
             }
             50% {
                 transform: translateY(-10px) rotate(360deg);
-                filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); /* Add a shadow to enhance the effect */
+                filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.4)); /* Add a shadow to enhance the effect */
             }
         }   
 
@@ -295,7 +327,8 @@
 <body class="text-black">
 
     <div class="container mx-auto px-4">
-        <h1 class="text-6xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
+            <h1 class="text-6xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
+       
         <h2 class="text-left">🤘.The Jews took hollywood...we're stealing it back</h2>
         <div class="melon"></div>
         <div class="relative text-gray-600">
@@ -318,14 +351,22 @@
             <div id="videoModal" class="video-modal">
                 <div class="video-modal-content">
                     <span class="close">&times;</span>
-                    <div style="border-radius: 10px; width: 100%; overflow: hidden;">  
-                    <iframe id="videoIframe" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
+                    <div style="border-radius: 10px; width: 100%; overflow: hidden;">
+                        <iframe id="videoIframe" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href)">
-                        Pass the<span class="popcorn">🍿</span>
-                    </button>
-                    
-                    
+                    <div class="flex justify-end items-center mt-4 space-x-4">
+                        <label for="dark-mode-toggle" class="flex items-center cursor-pointer ml-4 mt-3">
+                            <div class="relative">
+                                <input type="checkbox" id="dark-mode-toggle" class="sr-only">
+                                <div class="bg-gray-600 w-10 h-6 rounded-full"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform"></div>
+                            </div>
+                            <div class="mr-2 text-gray-700">Dark Mode</div>
+                        </label>
+                        <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href)">
+                            Pass the<span class="popcorn">🍿</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -506,10 +547,27 @@ function displayMovies(movies, containerId) {
 }
 
 
+ // JavaScript to handle dark mode switch
+ const toggleSwitch = document.getElementById('dark-mode-toggle');
+    const bodyElement = document.body;
+    const dotElement = document.querySelector('.dot');
+    const videoModalContent = document.querySelector('.video-modal-content');
 
-                
-
-            </script>
+    toggleSwitch.addEventListener('change', () => {
+        if (toggleSwitch.checked) {
+            bodyElement.classList.add('dark-mode');
+            dotElement.classList.add('translate-x-full');
+            dotElement.classList.add('bg-gray-800'); // Optional: change dot color in dark mode
+            videoModalContent.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Transparent modal box
+            document.querySelector('.video-modal').style.backgroundColor = 'rgba(0, 0, 0, 0.9)'; // Darken background
+        } else {
+            bodyElement.classList.remove('dark-mode');
+            dotElement.classList.remove('translate-x-full');
+            dotElement.classList.remove('bg-gray-800'); // Optional: revert dot color
+            videoModalContent.style.backgroundColor = 'rgba(255, 255, 255, 1)'; // Revert modal box color
+            document.querySelector('.video-modal').style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; // Revert background color
+        }
+    });
+</script>
         </body>
         </html>
-        
