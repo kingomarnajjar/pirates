@@ -51,6 +51,38 @@
     background-color: #666;
 }
 
+.night-light body {
+        background: linear-gradient(to right, #f5deb3 50%, #deb887 50%);
+        color: black;
+    }
+
+    .night-light .video-modal-content {
+        background-color: rgba(0, 0, 0, 0.3);
+        background: #f5deb3;
+    }
+
+    .night-light .movie-tile {
+        background: #f5deb3;
+        color: black;
+    }
+
+    .night-light .search-input {
+        background-color: #deb887;
+        color: black;
+    }
+
+    .night-light .video-modal-content {
+        background-color: rgba(255, 228, 181, 0.8);
+    }
+
+    .night-light .stream-btn {
+        background-color: #daa520;
+    }
+
+    .night-light .stream-btn:hover {
+        background-color: #cd853f;
+    }
+
         .video-modal {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
@@ -355,10 +387,18 @@
                         <iframe id="videoIframe" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
                     </div>
                     <div class="flex justify-end items-center mt-4 space-x-4">
+                        <label for="night-light-toggle" class="flex items-center cursor-pointer mt-3">
+                            <div class="relative">
+                                <input type="checkbox" id="night-light-toggle" class="sr-only">
+                                <div class="block bg-yellow-100 w-10 h-6 rounded-full"></div>
+                                <div class="dot-night absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform"></div>
+                            </div>
+                            <div class="ml-2 mr-2 text-gray-700">Night Light</div>
+                        </label>
                         <label for="dark-mode-toggle" class="flex items-center cursor-pointer ml-4 mt-3">
                             <div class="relative">
                                 <input type="checkbox" id="dark-mode-toggle" class="sr-only">
-                                <div class="bg-gray-600 w-10 h-6 rounded-full"></div>
+                                <div class="bg-gray-400 w-10 h-6 rounded-full"></div>
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform"></div>
                             </div>
                             <div class="mr-2 text-gray-700">Dark Mode</div>
@@ -549,8 +589,10 @@ function displayMovies(movies, containerId) {
 
  // JavaScript to handle dark mode switch
  const toggleSwitch = document.getElementById('dark-mode-toggle');
+    const nightLightSwitch = document.getElementById('night-light-toggle');
     const bodyElement = document.body;
     const dotElement = document.querySelector('.dot');
+    const dotNightElement = document.querySelector('.dot-night');
     const videoModalContent = document.querySelector('.video-modal-content');
 
     toggleSwitch.addEventListener('change', () => {
@@ -566,6 +608,18 @@ function displayMovies(movies, containerId) {
             dotElement.classList.remove('bg-gray-800'); // Optional: revert dot color
             videoModalContent.style.backgroundColor = 'rgba(255, 255, 255, 1)'; // Revert modal box color
             document.querySelector('.video-modal').style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; // Revert background color
+        }
+    });
+
+    nightLightSwitch.addEventListener('change', () => {
+        if (nightLightSwitch.checked) {
+            bodyElement.classList.add('night-light');
+            dotNightElement.classList.add('translate-x-full');
+            dotNightElement.classList.add('bg-yellow-500'); // Optional: change dot color in night light mode
+        } else {
+            bodyElement.classList.remove('night-light');
+            dotNightElement.classList.remove('translate-x-full');
+            dotNightElement.classList.remove('bg-yellow-500'); // Optional: revert dot color
         }
     });
 </script>
