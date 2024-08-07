@@ -308,12 +308,12 @@
                 cursor: pointer;
             }
 
-            .stream-btn {
+            .trailer-btn {
                 background-color: #32cd32;
                 color: white;
             }
 
-            .stream-btn:hover {
+            .trailer-btn:hover {
                 background-color: #28a745;
             }
 
@@ -512,29 +512,30 @@
             }
 
             function displaySearchResults(results, containerId) {
-                const container = document.getElementById(containerId);
-                container.innerHTML = ''; // Clear previous results
-                results.forEach(result => {
-                    if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
-                        const title = result.title || result.name;
-                        const imdbId = result.id; // Assuming it fetches the correct ID
-                        const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
-                        const overview = result.overview || 'No description available.';
-                        const mediaType = result.media_type;
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear previous results
+    results.forEach(result => {
+        if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
+            const title = result.title || result.name;
+            const imdbId = result.id; // Assuming it fetches the correct ID
+            const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
+            const overview = result.overview || 'No description available.';
+            const mediaType = result.media_type;
 
-                        const movieTile = document.createElement('div');
-                        movieTile.className = 'movie-tile';
-                        movieTile.innerHTML = `
-                            <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
-                            <h3>${title}</h3>
-                            <p>${overview}</p>
-                            <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('${mediaType}', '${imdbId}')">Stream</button>
-                            <button class="trailer-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${title}')">Trailer</button>
-                        `;
-                        container.appendChild(movieTile);
-                    }
-                });
-            }
+            const movieTile = document.createElement('div');
+            movieTile.className = 'movie-tile';
+            movieTile.innerHTML = `
+                <a href="javascript:void(0);" onclick="openModal('${mediaType}', '${imdbId}')">
+                    <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
+                    <h3>${title}</h3>
+                    <p>${overview}</p>
+                </a>
+                <button class="trailer-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${title}')">Trailer</button>
+            `;
+            container.appendChild(movieTile);
+        }
+    });
+}
 
             function fetchTrailer(title) {
                 const youtubeSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(title + ' trailer')}&key=${youtubeApiKey}`;
@@ -629,41 +630,44 @@
             }
 
             function displayComingSoon(movies) {
-                const container = document.getElementById('comingSoon');
-                container.innerHTML = '';
-                const slider = document.createElement('div');
-                slider.className = 'slider-container flex overflow-x-auto pl-4 pr-2 py-2 space-x-4';
-                movies.forEach(movie => {
-                    const movieCard = document.createElement('div');
-                    movieCard.className = 'slider-item';
-                    movieCard.innerHTML = `
-                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
-                        <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
-                        <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('movie', '${movie.id}')">Stream</button>
-                    `;
-                    slider.appendChild(movieCard);
-                });
-                container.appendChild(slider);
-            }
+    const container = document.getElementById('comingSoon');
+    container.innerHTML = '';
+    const slider = document.createElement('div');
+    slider.className = 'slider-container flex overflow-x-auto pl-4 pr-2 py-2 space-x-4';
+    movies.forEach(movie => {
+        const movieCard = document.createElement('div');
+        movieCard.className = 'slider-item';
+        movieCard.innerHTML = `
+            <a href="javascript:void(0);" onclick="openModal('movie', '${movie.id}')">
+                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
+                <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
+            </a>
+        `;
+        slider.appendChild(movieCard);
+    });
+    container.appendChild(slider);
+}
+
 
             function displayMovies(movies, containerId) {
-                const container = document.getElementById(containerId);
-                container.innerHTML = ''; // Clear previous results
-                movies.forEach(movie => {
-                    if (movie.poster_path) {
-                        const movieTile = document.createElement('div');
-                        movieTile.className = 'movie-tile';
-                        movieTile.innerHTML = `
-                            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
-                            <h3>${movie.title}</h3>
-                            <p>${movie.overview || 'No description available.'}</p>
-                            <button class="stream-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="openModal('movie', '${movie.id}')">Stream</button>
-                            <button class="trailer-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${movie.title}')">Trailer</button>
-                        `;
-                        container.appendChild(movieTile);
-                    }
-                });
-            }
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear previous results
+    movies.forEach(movie => {
+        if (movie.poster_path) {
+            const movieTile = document.createElement('div');
+            movieTile.className = 'movie-tile';
+            movieTile.innerHTML = `
+                <a href="javascript:void(0);" onclick="openModal('movie', '${movie.id}')">
+                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto">
+                    <h3>${movie.title}</h3>
+                    <p>${movie.overview || 'No description available.'}</p>
+                </a>
+                <button class="trailer-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${movie.title}')">Trailer</button>
+            `;
+            container.appendChild(movieTile);
+        }
+    });
+}
 
             
 
