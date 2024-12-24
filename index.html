@@ -649,57 +649,35 @@
                 }
             }
 
-// Add this function to update meta tags
-function updateMetaTags(title, description, posterPath, mediaType) {
-    const siteName = 'Watermelon Movies 🍉';
-    const contentType = mediaType === 'tv' ? 'TV Show' : 'Movie';
-    
-    // Update all meta tags
-    document.querySelector('meta[property="og:title"]').setAttribute('content', `${title} (${contentType}) - ${siteName}`);
-    document.querySelector('meta[property="og:description"]').setAttribute('content', description || `Watch ${title} on ${siteName}`);
-    document.querySelector('meta[property="og:image"]').setAttribute('content', posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : '');
-    document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
-    document.querySelector('meta[name="twitter:card"]').setAttribute('content', 'summary_large_image');
-    
-    // Update page title
-    document.title = `${title} (${contentType}) - ${siteName}`;
+// Simple version of updateMetaTags
+function updateMetaTags(title, description, posterPath) {
+    // Basic meta updates only
+    document.querySelector('meta[property="og:title"]').content = title;
+    document.querySelector('meta[property="og:description"]').content = description;
+    document.querySelector('meta[property="og:image"]').content = posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : '';
+    document.title = title;
 }
 
+// Simplified openModal
 async function openModal(mediaType, imdbId, season = null, episode = null) {
     let baseUrl = 'https://vidsrc.xyz/embed/';
     if (mediaType === 'movie') {
         baseUrl += 'movie/';
     } else if (mediaType === 'tv') {
         baseUrl += `tv/?season=${season}&episode=${episode}&`;
-    } else {
-        console.error('Unsupported media type');
-        return;
     }
     
-    // Fetch movie/show details from TMDB
-    const detailsUrl = `https://api.themoviedb.org/3/${mediaType}/${imdbId}?api_key=${apiKey}`;
-    try {
-        const response = await fetch(detailsUrl);
-        const data = await response.json();
-        const title = data.title || data.name;
-        const description = data.overview;
-        const posterPath = data.poster_path;
-        
-        // Update meta tags with movie/show info
-        updateMetaTags(title, description, posterPath, mediaType);
-        
-        // Update URL and open modal
-        const videoUrl = baseUrl + imdbId;
-        modal.style.display = "block";
-        videoIframe.src = videoUrl;
+    const videoUrl = baseUrl + imdbId;
+    modal.style.display = "block";
+    videoIframe.src = videoUrl;
 
-        let newUrl = `${window.location.pathname}?type=${mediaType}&id=${imdbId}`;
-        if (season && episode) {
-            newUrl += `&season=${season}&episode=${episode}`;
-        }
-        window.history.pushState({ path: newUrl }, '', newUrl);
+    // Fetch and update meta data in the background
+    try {
+        const response = await fetch(`https://api.themoviedb.org/3/${mediaType}/${imdbId}?api_key=${apiKey}`);
+        const data = await response.json();
+        updateMetaTags(data.title || data.name, data.overview, data.poster_path);
     } catch (error) {
-        console.error('Error fetching media details:', error);
+        console.error('Error updating meta data:', error);
     }
 }
 
