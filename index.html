@@ -3,6 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta property="og:title" content="Watermelon Movies 🍉">
+            <meta property="og:description" content="The jews took hollywood, we're stealing it back">
+            <meta property="og:image" content="">
+            <meta property="og:url" content="">
+            <meta name="twitter:card" content="summary_large_image">
         <title>Watermelon Movies 🍉</title>
         <link rel="icon" type="image/x-icon" href="favicon_watermelon_icon.ico">
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -365,73 +370,137 @@
             z-index: 1;
         }
         </style>
+        <script type="module">
+            import Hydrafiles from 'https://hydrafiles.com/hydrafiles-web.esm.js';
+            
+            const hydrafiles = new Hydrafiles();
+            document.getElementById('start').addEventListener('click', async () => {
+              await hydrafiles.start();
+              console.log('Hydrafiles started');
+            });
+            </script>
+                        
           <script>
-            (function() {
-                // Intercept window.open calls globally
-                const originalOpen = window.open;
-                window.open = function(url, ...args) {
-                    if (url) {
-                        console.log('Blocked opening URL:', url);
-                        alert("Opening new tabs is blocked on this website.");
-                        return null;
+(function() {
+    // Function to block window.open globally after load
+    function blockWindowOpen() {
+        const originalOpen = window.open;
+        window.open = function(url, ...args) {
+            if (url) {
+                console.log('Blocked opening URL:', url);
+                alert("Opening new tabs is blocked on this website.");
+                return null;
+            }
+            return originalOpen.apply(this, arguments);
+        };
+    }
+
+    // Function to block iframe content and navigation after it has loaded
+    function blockIframeContent(iframe) {
+        try {
+            const iframeWindow = iframe.contentWindow;
+            const iframeDocument = iframeWindow.document;
+
+            // Block window.open within the iframe
+            iframeWindow.open = function(url, ...args) {
+                if (url) {
+                    console.log('Blocked opening URL from iframe:', url);
+                    alert("Opening new tabs is blocked on this website.");
+                    return null;
+                }
+                return null; // Prevent any window from being opened
+            };
+
+            // Block external navigation (e.g., links)
+            iframeDocument.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A' && event.target.href) {
+                    event.preventDefault();
+                    console.log('Blocked external navigation:', event.target.href);
+                    alert("External links are blocked within iframes.");
+                }
+            });
+
+            // Prevent form submissions from navigating
+            iframeDocument.addEventListener('submit', function(event) {
+                event.preventDefault();
+                alert("Form submissions are blocked within iframes.");
+            });
+
+            // Continuously monitor for src changes and block navigation
+            const observer = new MutationObserver(() => {
+                iframe.src = 'about:blank'; // Block any navigation attempt
+                iframeWindow.stop(); // Stop loading
+            });
+
+            observer.observe(iframe, {
+                attributes: true,
+                attributeFilter: ['src']
+            });
+
+            // Continuously block iframe script attempts to navigate
+            const blockScriptNavigation = () => {
+                try {
+                    iframeWindow.location = 'about:blank';
+                } catch (e) {
+                    console.log('Blocked script-based navigation.');
+                }
+            };
+
+            // Monitor scripts in the iframe
+            iframeWindow.addEventListener('beforeunload', blockScriptNavigation);
+            iframeWindow.addEventListener('unload', blockScriptNavigation);
+
+        } catch (e) {
+            console.error('Could not intercept iframe:', e);
+        }
+    }
+
+    // Apply monitoring to each iframe after it has loaded
+    function monitorIframe(iframe) {
+        iframe.onload = function() {
+            blockIframeContent(iframe);
+        };
+    }
+
+    // Apply monitoring to all existing and new iframes
+    function applyIframeMonitoring() {
+        document.querySelectorAll('iframe').forEach((iframe) => {
+            monitorIframe(iframe);
+        });
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.tagName === 'IFRAME') {
+                        monitorIframe(node);
                     }
-                    return originalOpen.apply(this, arguments);
-                };
-    
-                // Intercept window.open calls from iframes
-                function interceptIframeOpens() {
-                    const originalOpen = window.open;
-                    window.open = function(url, ...args) {
-                        if (url) {
-                            console.log('Blocked opening URL from iframe:', url);
-                            alert("Opening new tabs is blocked on this website.");
-                            return null;
-                        }
-                        return originalOpen.apply(this, arguments);
-                    };
-                }
-    
-                // Apply iframe interception to dynamically added iframes
-                function applyIframeInterception() {
-                    const observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            if (mutation.type === 'childList') {
-                                mutation.addedNodes.forEach((node) => {
-                                    if (node.tagName === 'IFRAME') {
-                                        node.onload = function() {
-                                            interceptIframeOpens();
-                                        };
-                                    }
-                                });
-                            }
-                        });
-                    });
-    
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true
-                    });
-                }
-    
-                // Apply iframe interception to existing iframes
-                document.querySelectorAll('iframe').forEach((iframe) => {
-                    iframe.onload = function() {
-                        interceptIframeOpens();
-                    };
                 });
-    
-                // Initialize monitoring
-                applyIframeInterception();
-            })();
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // Initialize after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        blockWindowOpen(); // Apply global block after page load
+        applyIframeMonitoring(); // Start monitoring iframes
+    });
+})();
+
         </script>
     </head>
     <body class="text-black">
         <div class="container mx-auto px-4">
-            <a href="https://kingomarnajjar.github.io/pirates">
-                <h1 class="text-6xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
-            </a>
+            <h1 class="text-6xl font-bold my-8 text-left">Watermelon Movies 🍉</h1>
             <h2 class="text-left">🤘.The Jews took hollywood...we're stealing it back</h2>
             <div class="melon"></div>
+            <!-- <button id="start">Start Hydrafiles</button> -->
+
+            
             <div class="relative text-gray-600">
                 <form id="searchForm" action="#">
                     <input type="search" name="search" placeholder="Search" class="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none">
@@ -515,30 +584,28 @@
             }
 
             function displaySearchResults(results, containerId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = ''; // Clear previous results
-    results.forEach(result => {
-        if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
-            const title = result.title || result.name;
-            const imdbId = result.id; // Assuming it fetches the correct ID
-            const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
-            const overview = result.overview || 'No description available.';
-            const mediaType = result.media_type;
+                const container = document.getElementById(containerId);
+                container.innerHTML = ''; // Clear previous results
+                results.forEach(result => {
+                    if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
+                        const title = result.title || result.name;
+                        const imdbId = result.id; // Assuming it fetches the correct ID
+                        const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
+                        const overview = result.overview || 'No de  scription available.';
+                        const mediaType = result.media_type;
 
-            const movieTile = document.createElement('div');
-            movieTile.className = 'movie-tile';
-            movieTile.innerHTML = `
-                <a href="javascript:void(0);" onclick="openModal('${mediaType}', '${imdbId}')">
-                    <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
-                    <h3>${title}</h3>
-                    <p>${overview}</p>
-                </a>
-                <button class="trailer-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${title}')">Trailer</button>
-            `;
-            container.appendChild(movieTile);
-        }
-    });
-}
+                        const movieTile = document.createElement('div');
+                        movieTile.className = 'movie-tile';
+                        movieTile.innerHTML = `
+                            <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
+                            <h3>${title}</h3>
+                            <p>${overview}</p>
+                            <button class="trailer-btn bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${title}')">Trailer</button>
+                        `;
+                        container.appendChild(movieTile);
+                    }
+                });
+            }
 
             function fetchTrailer(title) {
                 const youtubeSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(title + ' trailer')}&key=${youtubeApiKey}`;
@@ -579,23 +646,53 @@
                 }
             }
 
-            function openModal(mediaType, imdbId) {
-                let baseUrl = 'https://vidsrc.xyz/embed/';
-                if (mediaType === 'movie') {
-                    baseUrl += 'movie/';
-                } else if (mediaType === 'tv') {
-                    baseUrl += 'tv/';
-                } else {
-                    console.error('Unsupported media type');
-                    return;
-                }
-                const videoUrl = baseUrl + imdbId;
-                modal.style.display = "block";
-                videoIframe.src = videoUrl;
+// Add this function to update meta tags
+function updateMetaTags(title, description, posterPath) {
+    document.querySelector('meta[property="og:title"]').setAttribute('content', title + ' - Watermelon Movies 🍉');
+    document.querySelector('meta[property="og:description"]').setAttribute('content', description || 'Watch ' + title + ' on Watermelon Movies');
+    document.querySelector('meta[property="og:image"]').setAttribute('content', posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : '');
+    document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
+    document.title = title + ' - Watermelon Movies 🍉';
+}
 
-                const newUrl = `${window.location.pathname}?type=${mediaType}&id=${imdbId}`;
-                window.history.pushState({ path: newUrl }, '', newUrl);
-            }
+// Replace your existing openModal function with this updated version
+async function openModal(mediaType, imdbId, season = null, episode = null) {
+    let baseUrl = 'https://vidsrc.xyz/embed/';
+    if (mediaType === 'movie') {
+        baseUrl += 'movie/';
+    } else if (mediaType === 'tv') {
+        baseUrl += `tv/?season=${season}&episode=${episode}&`;
+    } else {
+        console.error('Unsupported media type');
+        return;
+    }
+    
+    // Fetch movie/show details from TMDB
+    const detailsUrl = `https://api.themoviedb.org/3/${mediaType}/${imdbId}?api_key=${apiKey}`;
+    try {
+        const response = await fetch(detailsUrl);
+        const data = await response.json();
+        const title = data.title || data.name;
+        const description = data.overview;
+        const posterPath = data.poster_path;
+        
+        // Update meta tags with movie/show info
+        updateMetaTags(title, description, posterPath);
+        
+        // Update URL and open modal
+        const videoUrl = baseUrl + imdbId;
+        modal.style.display = "block";
+        videoIframe.src = videoUrl;
+
+        let newUrl = `${window.location.pathname}?type=${mediaType}&id=${imdbId}`;
+        if (season && episode) {
+            newUrl += `&season=${season}&episode=${episode}`;
+        }
+        window.history.pushState({ path: newUrl }, '', newUrl);
+    } catch (error) {
+        console.error('Error fetching media details:', error);
+    }
+}
 
             document.addEventListener('DOMContentLoaded', function() {
                 fetchMovies(); // Fetches upcoming movies for the Coming Soon section
@@ -671,6 +768,31 @@
         }
     });
 }
+
+function displaySoundtracks() {
+    const soundtrackList = document.getElementById('soundtrackList');
+    soundtrackList.innerHTML = ''; // Clear previous soundtracks
+
+    // Example soundtracks - replace these with dynamic data if needed
+    const playlists = [
+        'https://open.spotify.com/embed/playlist/7N1Vxlv6sqZaAbGlo5XQRE', // Replace with your playlist URLs
+       
+    ];
+
+    playlists.forEach(url => {
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.width = '100%';
+        iframe.height = '380';
+        iframe.frameBorder = '0';
+        iframe.allow = 'encrypted-media';
+        soundtrackList.appendChild(iframe);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    displaySoundtracks(); // Call the function to display soundtracks
+});
 
             
 
