@@ -381,115 +381,8 @@
             </script>
                         
           <script>
-(function() {
-    // Function to block window.open globally after load
-    function blockWindowOpen() {
-        const originalOpen = window.open;
-        window.open = function(url, ...args) {
-            if (url) {
-                console.log('Blocked opening URL:', url);
-                alert("Opening new tabs is blocked on this website.");
-                return null;
-            }
-            return originalOpen.apply(this, arguments);
-        };
-    }
 
-    // Function to block iframe content and navigation after it has loaded
-    function blockIframeContent(iframe) {
-        try {
-            const iframeWindow = iframe.contentWindow;
-            const iframeDocument = iframeWindow.document;
 
-            // Block window.open within the iframe
-            iframeWindow.open = function(url, ...args) {
-                if (url) {
-                    console.log('Blocked opening URL from iframe:', url);
-                    alert("Opening new tabs is blocked on this website.");
-                    return null;
-                }
-                return null; // Prevent any window from being opened
-            };
-
-            // Block external navigation (e.g., links)
-            iframeDocument.addEventListener('click', function(event) {
-                if (event.target.tagName === 'A' && event.target.href) {
-                    event.preventDefault();
-                    console.log('Blocked external navigation:', event.target.href);
-                    alert("External links are blocked within iframes.");
-                }
-            });
-
-            // Prevent form submissions from navigating
-            iframeDocument.addEventListener('submit', function(event) {
-                event.preventDefault();
-                alert("Form submissions are blocked within iframes.");
-            });
-
-            // Continuously monitor for src changes and block navigation
-            const observer = new MutationObserver(() => {
-                iframe.src = 'about:blank'; // Block any navigation attempt
-                iframeWindow.stop(); // Stop loading
-            });
-
-            observer.observe(iframe, {
-                attributes: true,
-                attributeFilter: ['src']
-            });
-
-            // Continuously block iframe script attempts to navigate
-            const blockScriptNavigation = () => {
-                try {
-                    iframeWindow.location = 'about:blank';
-                } catch (e) {
-                    console.log('Blocked script-based navigation.');
-                }
-            };
-
-            // Monitor scripts in the iframe
-            iframeWindow.addEventListener('beforeunload', blockScriptNavigation);
-            iframeWindow.addEventListener('unload', blockScriptNavigation);
-
-        } catch (e) {
-            console.error('Could not intercept iframe:', e);
-        }
-    }
-
-    // Apply monitoring to each iframe after it has loaded
-    function monitorIframe(iframe) {
-        iframe.onload = function() {
-            blockIframeContent(iframe);
-        };
-    }
-
-    // Apply monitoring to all existing and new iframes
-    function applyIframeMonitoring() {
-        document.querySelectorAll('iframe').forEach((iframe) => {
-            monitorIframe(iframe);
-        });
-
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.tagName === 'IFRAME') {
-                        monitorIframe(node);
-                    }
-                });
-            });
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-
-    // Initialize after page load
-    document.addEventListener('DOMContentLoaded', function() {
-        blockWindowOpen(); // Apply global block after page load
-        applyIframeMonitoring(); // Start monitoring iframes
-    });
-})();
 
         </script>
     </head>
@@ -659,25 +552,87 @@ function updateMetaTags(title, description, posterPath) {
 }
 
 // Simplified openModal
-async function openModal(mediaType, imdbId, season = null, episode = null) {
-    let baseUrl = 'https://vidsrc.xyz/embed/';
-    if (mediaType === 'movie') {
-        baseUrl += 'movie/';
-    } else if (mediaType === 'tv') {
-        baseUrl += `tv/?season=${season}&episode=${episode}&`;
-    }
-    
-    const videoUrl = baseUrl + imdbId;
-    modal.style.display = "block";
-    videoIframe.src = videoUrl;
-
-    // Fetch and update meta data in the background
+async function openModal(mediaType, tmdbId, season = null, episode = null) {
     try {
-        const response = await fetch(`https://api.themoviedb.org/3/${mediaType}/${imdbId}?api_key=${apiKey}`);
+        // First get the IMDB ID from TMDB
+        const detailsUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}/external_ids?api_key=${apiKey}`;
+        const response = await fetch(detailsUrl);
         const data = await response.json();
-        updateMetaTags(data.title || data.name, data.overview, data.poster_path);
+        const imdbId = data.imdb_id;
+
+        if (!imdbId) {
+            console.error('No IMDB ID found');
+            return;
+        }
+
+        // Function to try loading a video source
+        const tryVideoSource = async (source) => {
+            let videoUrl;
+            if (source === 'vidsrc.dev') {
+                videoUrl = 'https://vidsrc.dev/embed/';
+                if (mediaType === 'movie') {
+                    videoUrl += `movie/${imdbId}`;
+                } else if (mediaType === 'tv') {
+                    videoUrl += `tv/${imdbId}`;
+                    if (season && episode) {
+                        videoUrl += `/${season}/${episode}`;
+                    } else {
+                        videoUrl += '/1/1'; // Default to season 1 episode 1
+                    }
+                }
+            } else {
+                // vidsrc.xyz format
+                videoUrl = 'https://vidsrc.xyz/embed/';
+                if (mediaType === 'movie') {
+                    videoUrl += `movie/${tmdbId}`;
+                } else if (mediaType === 'tv') {
+                    videoUrl += `tv/?season=${season || 1}&episode=${episode || 1}&${tmdbId}`;
+                }
+            }
+            return videoUrl;
+        };
+
+        // Try vidsrc.dev first
+        let videoUrl = await tryVideoSource('vidsrc.dev');
+        modal.style.display = "block";
+        videoIframe.src = videoUrl;
+
+        // Add event listener for iframe load error
+        videoIframe.onerror = async () => {
+            console.log('First source failed, trying alternate source...');
+            videoUrl = await tryVideoSource('vidsrc.xyz');
+            videoIframe.src = videoUrl;
+        };
+
+        // Add a switch source button to the modal
+        const switchSourceBtn = document.createElement('button');
+        switchSourceBtn.className = 'share-btn';
+        switchSourceBtn.innerHTML = 'Try Alternate Source';
+        switchSourceBtn.style.marginRight = '10px';
+        switchSourceBtn.onclick = async () => {
+            const currentSource = videoIframe.src.includes('vidsrc.dev') ? 'vidsrc.xyz' : 'vidsrc.dev';
+            videoUrl = await tryVideoSource(currentSource);
+            videoIframe.src = videoUrl;
+        };
+
+        // Add button to modal content
+        const modalContent = document.querySelector('.flex.justify-end.items-center.mt-4.space-x-4');
+        modalContent.insertBefore(switchSourceBtn, modalContent.firstChild);
+
+        // Fetch title and metadata
+        const titleResponse = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${apiKey}`);
+        const titleData = await titleResponse.json();
+        const title = titleData.title || titleData.name;
+        updateMetaTags(title, titleData.overview, titleData.poster_path);
+
+        // Update URL
+        let newUrl = `${window.location.pathname}?type=${mediaType}&id=${tmdbId}`;
+        if (season && episode) {
+            newUrl += `&season=${season}&episode=${episode}`;
+        }
+        window.history.pushState({ path: newUrl }, '', newUrl);
     } catch (error) {
-        console.error('Error updating meta data:', error);
+        console.error('Error in openModal:', error);
     }
 }
 
