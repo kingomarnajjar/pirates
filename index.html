@@ -584,28 +584,31 @@
             }
 
             function displaySearchResults(results, containerId) {
-                const container = document.getElementById(containerId);
-                container.innerHTML = ''; // Clear previous results
-                results.forEach(result => {
-                    if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
-                        const title = result.title || result.name;
-                        const imdbId = result.id; // Assuming it fetches the correct ID
-                        const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
-                        const overview = result.overview || 'No de  scription available.';
-                        const mediaType = result.media_type;
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear previous results
+    results.forEach(result => {
+        if ((result.media_type === 'movie' || result.media_type === 'tv') && result.poster_path) {
+            const title = result.title || result.name;
+            const id = result.id;
+            const posterPath = `https://image.tmdb.org/t/p/w500${result.poster_path}`;
+            const overview = result.overview || 'No description available.';
+            const mediaType = result.media_type;
 
-                        const movieTile = document.createElement('div');
-                        movieTile.className = 'movie-tile';
-                        movieTile.innerHTML = `
-                            <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
-                            <h3>${title}</h3>
-                            <p>${overview}</p>
-                            <button class="trailer-btn bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${title}')">Trailer</button>
-                        `;
-                        container.appendChild(movieTile);
-                    }
-                });
-            }
+            const movieTile = document.createElement('div');
+            movieTile.className = 'movie-tile';
+            movieTile.innerHTML = `
+                <a href="javascript:void(0);" onclick="openModal('${mediaType}', '${id}')">
+                    <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;">
+                    <h3>${title}</h3>
+                    <p>${overview}</p>
+                </a>
+                <button class="trailer-btn bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="fetchTrailer('${title}')">Trailer</button>
+                <div class="media-label">${mediaType.toUpperCase()}</div>
+            `;
+            container.appendChild(movieTile);
+        }
+    });
+}
 
             function fetchTrailer(title) {
                 const youtubeSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(title + ' trailer')}&key=${youtubeApiKey}`;
@@ -647,15 +650,21 @@
             }
 
 // Add this function to update meta tags
-function updateMetaTags(title, description, posterPath) {
-    document.querySelector('meta[property="og:title"]').setAttribute('content', title + ' - Watermelon Movies 🍉');
-    document.querySelector('meta[property="og:description"]').setAttribute('content', description || 'Watch ' + title + ' on Watermelon Movies');
+function updateMetaTags(title, description, posterPath, mediaType) {
+    const siteName = 'Watermelon Movies 🍉';
+    const contentType = mediaType === 'tv' ? 'TV Show' : 'Movie';
+    
+    // Update all meta tags
+    document.querySelector('meta[property="og:title"]').setAttribute('content', `${title} (${contentType}) - ${siteName}`);
+    document.querySelector('meta[property="og:description"]').setAttribute('content', description || `Watch ${title} on ${siteName}`);
     document.querySelector('meta[property="og:image"]').setAttribute('content', posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : '');
     document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
-    document.title = title + ' - Watermelon Movies 🍉';
+    document.querySelector('meta[name="twitter:card"]').setAttribute('content', 'summary_large_image');
+    
+    // Update page title
+    document.title = `${title} (${contentType}) - ${siteName}`;
 }
 
-// Replace your existing openModal function with this updated version
 async function openModal(mediaType, imdbId, season = null, episode = null) {
     let baseUrl = 'https://vidsrc.xyz/embed/';
     if (mediaType === 'movie') {
@@ -677,7 +686,7 @@ async function openModal(mediaType, imdbId, season = null, episode = null) {
         const posterPath = data.poster_path;
         
         // Update meta tags with movie/show info
-        updateMetaTags(title, description, posterPath);
+        updateMetaTags(title, description, posterPath, mediaType);
         
         // Update URL and open modal
         const videoUrl = baseUrl + imdbId;
