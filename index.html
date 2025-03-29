@@ -422,7 +422,7 @@
             transition: transform 0.2s;
         }
         
-        .category-item img:hover {
+        .category-item:hover img {
             transform: scale(1.05);
         }
 
@@ -456,6 +456,205 @@
             height: 250px;
             width: 100%;
             margin-bottom: 10px;
+        }
+
+        /* Movie details modal styles */
+        .details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .details-content {
+            background-color: white;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dark-mode .details-content {
+            background-color: #333;
+            color: white;
+        }
+
+        .night-light .details-content {
+            background-color: #f5deb3;
+            color: black;
+        }
+
+        .details-backdrop {
+            position: relative;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .backdrop-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .details-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .details-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .genre-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 0 5px 5px 0;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .dark-mode .genre-tag {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .night-light .genre-tag {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .watch-button {
+            background-color: #32cd32;
+            color: white;
+        }
+
+        .trailer-button {
+            background-color: #ff6347;
+            color: white;
+        }
+
+        .cast-section {
+            margin-top: 20px;
+        }
+
+        .cast-list {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .cast-item {
+            flex: 0 0 auto;
+            width: 100px;
+            text-align: center;
+        }
+
+        .cast-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        /* Picture-in-picture trailer styles */
+        .pip-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: black;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1200;
+        }
+
+        .pip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .pip-title {
+            color: white;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 10px;
+        }
+
+        .pip-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pip-video {
+            width: 100%;
+            height: 169px; /* 16:9 aspect ratio for 300px width */
         }
     </style>
 </head>
@@ -672,28 +871,63 @@
                     const movieTile = document.createElement('div');
                     movieTile.className = 'movie-tile';
                     movieTile.innerHTML = `
-                        <a href="javascript:void(0);" onclick="openModal('${mediaType}', '${id}')">
+                        <div class="relative">
                             <img src="${posterPath}" alt="Poster for ${title}" style="width:100%; height:auto;" loading="lazy">
-                            <h3>${title}</h3>
-                            <p>${overview.substring(0, 100)}${overview.length > 100 ? '...' : ''}</p>
-                        </a>
-                        <button class="trailer-btn" onclick="fetchTrailer('${title}')">Trailer</button>
-                        <div class="media-label">${mediaType.toUpperCase()}</div>
+                            <div class="media-label">${mediaType.toUpperCase()}</div>
+                            ${result.vote_average ? `<div class="rating-badge">${result.vote_average.toFixed(1)} ⭐</div>` : ''}
+                        </div>
+                        <h3>${title}</h3>
+                        <p>${overview.substring(0, 100)}${overview.length > 100 ? '...' : ''}</p>
+                        <div class="flex justify-between mt-3">
+                            <button class="watch-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm" onclick="openModal('${mediaType}', '${id}')">Watch</button>
+                            <button class="info-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm" onclick="openMovieDetails('${mediaType}', ${id})">Details</button>
+                        </div>
                     `;
                     container.appendChild(movieTile);
                 }
             });
         }
 
-        function fetchTrailer(title) {
+        function fetchTrailer(title, movieId = null, mediaType = 'movie') {
             showProgress('Finding trailer...');
-            const youtubeSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(title + ' trailer')}&key=${youtubeApiKey}`;
+            
+            // If we have a movieId, get trailer directly from TMDB
+            if (movieId) {
+                const detailsUrl = `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?api_key=${apiKey}`;
+                fetch(detailsUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const trailer = data.results.find(video => 
+                            (video.type === 'Trailer' || video.type === 'Teaser') && 
+                            video.site === 'YouTube'
+                        );
+                        
+                        if (trailer) {
+                            openTrailerInPictureInPicture(trailer.key, title);
+                            showProgress('Trailer loaded');
+                        } else {
+                            // Fall back to YouTube search if no trailer in TMDB
+                            searchYouTubeForTrailer(title);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching TMDB trailer:', error);
+                        // Fall back to YouTube search
+                        searchYouTubeForTrailer(title);
+                    });
+            } else {
+                searchYouTubeForTrailer(title);
+            }
+        }
+        
+        function searchYouTubeForTrailer(title) {
+            const youtubeSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(title + ' official trailer')}&key=${youtubeApiKey}`;
             fetch(youtubeSearchUrl)
                 .then(response => response.json())
                 .then(data => {
                     if (data.items && data.items.length > 0) {
                         const videoId = data.items[0].id.videoId;
-                        openTrailerModal(videoId);
+                        openTrailerInPictureInPicture(videoId, title);
                         showProgress('Trailer loaded');
                     } else {
                         alert('Trailer not found.');
@@ -704,6 +938,80 @@
                     console.error('Error fetching trailer:', error);
                     showProgress('Error loading trailer');
                 });
+        }
+
+        function openTrailerInPictureInPicture(videoId, title) {
+            // Remove any existing pip container
+            const existingPip = document.querySelector('.pip-container');
+            if (existingPip) {
+                existingPip.remove();
+            }
+            
+            // Create the PiP container
+            const pipContainer = document.createElement('div');
+            pipContainer.className = 'pip-container';
+            pipContainer.innerHTML = `
+                <div class="pip-header">
+                    <div class="pip-title">Trailer: ${title}</div>
+                    <button class="pip-close">&times;</button>
+                </div>
+                <iframe class="pip-video" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>
+            `;
+            
+            // Add to the DOM
+            document.body.appendChild(pipContainer);
+            
+            // Add event listener to close button
+            const closeButton = pipContainer.querySelector('.pip-close');
+            closeButton.addEventListener('click', () => {
+                pipContainer.remove();
+            });
+            
+            // Make the PiP container draggable
+            makeDraggable(pipContainer);
+        }
+        
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const header = element.querySelector('.pip-header');
+            
+            if (header) {
+                header.onmousedown = dragMouseDown;
+            } else {
+                element.onmousedown = dragMouseDown;
+            }
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Get the mouse cursor position at startup
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // Call function when mouse moves
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Calculate the new cursor position
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // Set the element's new position
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+                element.style.right = "auto"; // Clear right position when dragging
+                element.style.bottom = "auto"; // Clear bottom position when dragging
+            }
+            
+            function closeDragElement() {
+                // Stop moving when mouse button is released
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
         }
 
         function openTrailerModal(videoId) {
@@ -725,6 +1033,133 @@
             document.querySelector('meta[property="og:description"]').content = description;
             document.querySelector('meta[property="og:image"]').content = posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : '';
             document.title = title;
+        }
+
+        // Detailed movie info modal
+        async function openMovieDetails(mediaType, id) {
+            try {
+                showProgress('Loading details...');
+                
+                // Remove any existing details modal
+                const existingModal = document.getElementById('movieDetailsModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Fetch complete movie details with append_to_response to minimize API calls
+                const url = `https://api.themoviedb.org/3/${mediaType}/${id}?api_key=${apiKey}&append_to_response=credits,videos,release_dates`;
+                const response = await fetch(url);
+                const movie = await response.json();
+                
+                // Create the modal
+                const detailsModal = document.createElement('div');
+                detailsModal.className = 'details-modal';
+                detailsModal.id = 'movieDetailsModal';
+                
+                // Find a trailer if available
+                const trailer = movie.videos?.results.find(video => 
+                    (video.type === 'Trailer' || video.type === 'Teaser') && 
+                    video.site === 'YouTube'
+                );
+                
+                // Get certification (rating)
+                let certification = '';
+                if (mediaType === 'movie' && movie.release_dates?.results) {
+                    const usReleases = movie.release_dates.results.find(country => country.iso_3166_1 === 'US');
+                    if (usReleases && usReleases.release_dates.length > 0) {
+                        certification = usReleases.release_dates.find(r => r.certification)?.certification || '';
+                    }
+                }
+                
+                // Prepare content
+                const title = movie.title || movie.name;
+                const backdropPath = movie.backdrop_path ? 
+                    `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : 
+                    (movie.poster_path ? `https://image.tmdb.org/t/p/w780${movie.poster_path}` : '');
+                
+                detailsModal.innerHTML = `
+                    <div class="details-content">
+                        <div class="details-backdrop" style="background-image: url('${backdropPath}')">
+                            <button class="details-close">&times;</button>
+                            <div class="backdrop-overlay">
+                                <h1 class="text-white text-3xl font-bold">${title}</h1>
+                                <div class="flex flex-wrap mt-2">
+                                    ${movie.release_date ? `<span class="text-white mr-4">${new Date(movie.release_date).getFullYear()}</span>` : ''}
+                                    ${movie.runtime ? `<span class="text-white mr-4">${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m</span>` : ''}
+                                    ${certification ? `<span class="text-white mr-4">${certification}</span>` : ''}
+                                    ${movie.vote_average ? `<span class="text-white mr-4">${movie.vote_average.toFixed(1)} ⭐</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="details-body">
+                            <div class="flex flex-wrap mb-4">
+                                ${movie.genres.map(genre => `<span class="genre-tag">${genre.name}</span>`).join('')}
+                            </div>
+                            
+                            <p class="mb-6">${movie.overview}</p>
+                            
+                            <div class="action-buttons">
+                                <button class="action-button watch-button" onclick="openModal('${mediaType}', ${id})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                    </svg>
+                                    Watch Now
+                                </button>
+                                ${trailer ? `
+                                    <button class="action-button trailer-button" onclick="openTrailerInPictureInPicture('${trailer.key}', '${title.replace(/'/g, "\\'")}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                        </svg>
+                                        Watch Trailer
+                                    </button>
+                                ` : ''}
+                            </div>
+                            
+                            ${movie.credits && movie.credits.cast && movie.credits.cast.length > 0 ? `
+                                <div class="cast-section">
+                                    <h2 class="text-xl font-bold mb-4">Cast</h2>
+                                    <div class="cast-list">
+                                        ${movie.credits.cast.slice(0, 8).map(person => `
+                                            <div class="cast-item">
+                                                <img 
+                                                    src="${person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : 'https://via.placeholder.com/80x80'}" 
+                                                    alt="${person.name}"
+                                                    class="cast-image"
+                                                    onerror="this.src='https://via.placeholder.com/80x80?text=${encodeURIComponent(person.name[0])}'"
+                                                >
+                                                <div class="text-sm font-medium">${person.name}</div>
+                                                <div class="text-xs text-gray-500">${person.character}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Add to the DOM
+                document.body.appendChild(detailsModal);
+                
+                // Add event listener to close button
+                const closeBtn = detailsModal.querySelector('.details-close');
+                closeBtn.addEventListener('click', () => {
+                    detailsModal.remove();
+                });
+                
+                // Close on click outside content
+                detailsModal.addEventListener('click', (e) => {
+                    if (e.target === detailsModal) {
+                        detailsModal.remove();
+                    }
+                });
+                
+                showProgress('Details loaded');
+            } catch (error) {
+                console.error('Error loading movie details:', error);
+                showProgress('Error loading details');
+            }
         }
 
         // Improved openModal function with season/episode selector
@@ -800,8 +1235,8 @@
                     videoUrl += `tv/${currentImdbId}/${currentSeason}/${currentEpisode}`;
                 }
             } else {
-               // vidsrc.xyz format - exactly as in the original code
-               videoUrl = 'https://vidsrc.xyz/embed/';
+                // vidsrc.xyz format - exactly as in the original code
+                videoUrl = 'https://vidsrc.xyz/embed/';
                 if (currentMediaType === 'movie') {
                     videoUrl += `movie/${currentTmdbId}`;
                 } else if (currentMediaType === 'tv') {
@@ -990,12 +1425,21 @@
                     const rating = movie.vote_average ? 
                         `<div class="rating-badge">${movie.vote_average.toFixed(1)} ⭐</div>` : '';
                     
+                    // Enhanced movie card with info button
                     movieCard.innerHTML = `
-                        <a href="javascript:void(0);" onclick="openModal('movie', '${movie.id}')">
+                        <div class="relative">
                             <img src="https://image.tmdb.org/t/p/w342${movie.poster_path}" alt="${movie.title}" loading="lazy">
                             ${rating}
-                            <h3 class="text-sm font-medium mt-2">${movie.title}</h3>
-                        </a>
+                        </div>
+                        <h3 class="text-sm font-medium mt-2">${movie.title}</h3>
+                        <div class="flex justify-between mt-2">
+                            <button class="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded" onclick="openModal('movie', ${movie.id})">
+                                Watch
+                            </button>
+                            <button class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded" onclick="openMovieDetails('movie', ${movie.id})">
+                                Details
+                            </button>
+                        </div>
                     `;
                     container.appendChild(movieCard);
                 }
@@ -1047,51 +1491,52 @@
                 });
         }
 
-        // Function to setup all dynamic categories
-function setupCategories() {
-    // Create category sections with placeholders first
-    createCategorySection('💥 Action-Packed Thrills');
-    createCategorySection('🏆 Critics\' Favorites');
-    createCategorySection('🆕 Fresh Off The Press');
-    createCategorySection('🍿 Crowd Pleasers');
-    createCategorySection('👻 Spooky Stuff');
-    createCategorySection('🦖 So Bad They\'re Extinct');
-    createCategorySection('🧠 Movies That Make No Sense');
-    createCategorySection('😴 Perfect For Napping');
-    createCategorySection('🔪 Don\'t Watch Alone');
-    createCategorySection('🌈 Movies Your Parents Hated');
-    createCategorySection('🚗 Explosions Go Boom');
-    createCategorySection('👽 Weird Stuff From Space');
-    
-    // Fetch movies for each category
-    fetchMoviesByGenre(genreMap.action, '💥 Action-Packed Thrills');
-    fetchHighRatedMovies('🏆 Critics\' Favorites');
-    fetchRecentReleases('🆕 Fresh Off The Press');
-    fetchMoviesByGenre(genreMap.comedy, '🍿 Crowd Pleasers');
-    fetchMoviesByGenre(genreMap.horror, '👻 Spooky Stuff');
-    fetchMoviesByGenre(genreMap.western, '🦖 So Bad They\'re Extinct');
-    fetchMoviesByGenre(genreMap.scienceFiction, '🧠 Movies That Make No Sense');
-    fetchMoviesByGenre(genreMap.documentary, '😴 Perfect For Napping');
-    fetchMoviesByGenre(genreMap.thriller, '🔪 Don\'t Watch Alone');
-    fetchMoviesByGenre(genreMap.family, '🌈 Movies Your Parents Hated');
-    fetchActionExplosionMovies('🚗 Explosions Go Boom');
-    fetchMoviesByGenre(genreMap.scienceFiction, '👽 Weird Stuff From Space');
-}
+        // Additional function to get action movies with high popularity
+        function fetchActionExplosionMovies(categoryTitle) {
+            const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${genreMap.action}&sort_by=popularity.desc&vote_count.gte=500`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayCategoryMovies(data.results, categoryTitle);
+                })
+                .catch(error => {
+                    console.error(`Error fetching explosion movies:`, error);
+                    showProgress(`Failed to load ${categoryTitle}`);
+                });
+        }
 
-// Additional function to get action movies with high popularity
-function fetchActionExplosionMovies(categoryTitle) {
-    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${genreMap.action}&sort_by=popularity.desc&vote_count.gte=500`;
-    
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            displayCategoryMovies(data.results, categoryTitle);
-        })
-        .catch(error => {
-            console.error(`Error fetching explosion movies:`, error);
-            showProgress(`Failed to load ${categoryTitle}`);
-        });
-}
+        // Function to setup all dynamic categories
+        function setupCategories() {
+            // Create category sections with placeholders first
+            createCategorySection('💥 Action-Packed Thrills');
+            createCategorySection('🏆 Critics\' Favorites');
+            createCategorySection('🆕 Fresh Off The Press');
+            createCategorySection('🍿 Crowd Pleasers');
+            createCategorySection('👻 Spooky Stuff');
+            createCategorySection('🦖 So Bad They\'re Extinct');
+            createCategorySection('🧠 Movies That Make No Sense');
+            createCategorySection('😴 Perfect For Napping');
+            createCategorySection('🔪 Don\'t Watch Alone');
+            createCategorySection('🌈 Movies Your Parents Hated');
+            createCategorySection('🚗 Explosions Go Boom');
+            createCategorySection('👽 Weird Stuff From Space');
+            
+            // Fetch movies for each category
+            fetchMoviesByGenre(genreMap.action, '💥 Action-Packed Thrills');
+            fetchHighRatedMovies('🏆 Critics\' Favorites');
+            fetchRecentReleases('🆕 Fresh Off The Press');
+            fetchMoviesByGenre(genreMap.comedy, '🍿 Crowd Pleasers');
+            fetchMoviesByGenre(genreMap.horror, '👻 Spooky Stuff');
+            fetchMoviesByGenre(genreMap.western, '🦖 So Bad They\'re Extinct');
+            fetchMoviesByGenre(genreMap.scienceFiction, '🧠 Movies That Make No Sense');
+            fetchMoviesByGenre(genreMap.documentary, '😴 Perfect For Napping');
+            fetchMoviesByGenre(genreMap.thriller, '🔪 Don\'t Watch Alone');
+            fetchMoviesByGenre(genreMap.family, '🌈 Movies Your Parents Hated');
+            fetchActionExplosionMovies('🚗 Explosions Go Boom');
+            fetchMoviesByGenre(genreMap.scienceFiction, '👽 Weird Stuff From Space');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Setup all categories
             setupCategories();
@@ -1105,9 +1550,25 @@ function fetchActionExplosionMovies(categoryTitle) {
                 if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
                     e.preventDefault();
                     document.querySelector('[name="search"]').focus();
-                } else if (e.key === 'Escape' && modal.style.display === 'block') {
-                    modal.style.display = "none";
-                    videoIframe.src = "";
+                } else if (e.key === 'Escape') {
+                    // Close any open modals
+                    const videoModal = document.getElementById("videoModal");
+                    if (videoModal.style.display === 'block') {
+                        videoModal.style.display = "none";
+                        videoIframe.src = "";
+                    }
+                    
+                    // Close any details modal
+                    const detailsModal = document.getElementById('movieDetailsModal');
+                    if (detailsModal) {
+                        detailsModal.remove();
+                    }
+                    
+                    // Close any pip trailers
+                    const pipContainer = document.querySelector('.pip-container');
+                    if (pipContainer) {
+                        pipContainer.remove();
+                    }
                 }
             });
 
@@ -1147,10 +1608,15 @@ function fetchActionExplosionMovies(categoryTitle) {
                     const movieCard = document.createElement('div');
                     movieCard.className = 'slider-item';
                     movieCard.innerHTML = `
-                        <a href="javascript:void(0);" onclick="openModal('movie', '${movie.id}')">
+                        <div class="relative">
                             <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto" loading="lazy">
-                            <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
-                        </a>
+                            ${movie.vote_average ? `<div class="rating-badge">${movie.vote_average.toFixed(1)} ⭐</div>` : ''}
+                        </div>
+                        <h3 class="text-lg font-semibold mt-2">${movie.title}</h3>
+                        <div class="flex justify-between mt-2">
+                            <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm" onclick="openModal('movie', '${movie.id}')">Watch</button>
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm" onclick="openMovieDetails('movie', ${movie.id})">Details</button>
+                        </div>
                     `;
                     container.appendChild(movieCard);
                 }
@@ -1164,13 +1630,18 @@ function fetchActionExplosionMovies(categoryTitle) {
                 if (movie.poster_path) {
                     const movieTile = document.createElement('div');
                     movieTile.className = 'movie-tile';
+                    
                     movieTile.innerHTML = `
-                        <a href="javascript:void(0);" onclick="openModal('movie', '${movie.id}')">
+                        <div class="relative">
                             <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="rounded-lg w-full h-auto" loading="lazy">
-                            <h3>${movie.title}</h3>
-                            <p>${movie.overview ? movie.overview.substring(0, 100) + (movie.overview.length > 100 ? '...' : '') : 'No description available.'}</p>
-                        </a>
-                        <button class="trailer-btn" onclick="fetchTrailer('${movie.title}')">Trailer</button>
+                            ${movie.vote_average ? `<div class="rating-badge">${movie.vote_average.toFixed(1)} ⭐</div>` : ''}
+                        </div>
+                        <h3>${movie.title}</h3>
+                        <p>${movie.overview ? movie.overview.substring(0, 100) + (movie.overview.length > 100 ? '...' : '') : 'No description available.'}</p>
+                        <div class="flex justify-between mt-3">
+                            <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm" onclick="openModal('movie', '${movie.id}')">Watch</button>
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm" onclick="openMovieDetails('movie', ${movie.id})">Details</button>
+                        </div>
                     `;
                     container.appendChild(movieTile);
                 }
