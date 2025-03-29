@@ -568,8 +568,8 @@ async function openModal(mediaType, tmdbId, season = null, episode = null) {
         // Function to try loading a video source
         const tryVideoSource = async (source) => {
             let videoUrl;
-            if (source === 'vidsrc.dev') {
-                videoUrl = 'https://vidsrc.dev/embed/';
+            if (source === 'player.vidsrc.co') {
+                videoUrl = 'https://player.vidsrc.co/embed/';
                 if (mediaType === 'movie') {
                     videoUrl += `movie/${imdbId}`;
                 } else if (mediaType === 'tv') {
@@ -593,7 +593,7 @@ async function openModal(mediaType, tmdbId, season = null, episode = null) {
         };
 
         // Try vidsrc.dev first
-        let videoUrl = await tryVideoSource('vidsrc.dev');
+        let videoUrl = await tryVideoSource('player.vidsrc.co');
         modal.style.display = "block";
         videoIframe.src = videoUrl;
 
@@ -610,7 +610,7 @@ async function openModal(mediaType, tmdbId, season = null, episode = null) {
         switchSourceBtn.innerHTML = 'Try Alternate Source';
         switchSourceBtn.style.marginRight = '10px';
         switchSourceBtn.onclick = async () => {
-            const currentSource = videoIframe.src.includes('vidsrc.dev') ? 'vidsrc.xyz' : 'vidsrc.dev';
+            const currentSource = videoIframe.src.includes('player.vidsrc.co') ? 'vidsrc.xyz' : 'player.vidsrc.co';
             videoUrl = await tryVideoSource(currentSource);
             videoIframe.src = videoUrl;
         };
