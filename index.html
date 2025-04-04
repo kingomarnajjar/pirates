@@ -752,7 +752,7 @@
         let currentImdbId = null;
         let currentSeason = 1;
         let currentEpisode = 1;
-        let currentSource = 'player.vidsrc.co'; // Default source
+        let currentSource = 'vidsrc.cc'; // Default source
         
         // Genre IDs mapping for creating meaningful categories
         const genreMap = {
@@ -1227,8 +1227,8 @@
         // Function to load video from current source
         function loadVideoSource() {
             let videoUrl;
-            if (currentSource === 'player.vidsrc.co') {
-                videoUrl = 'https://player.vidsrc.co/embed/';
+            if (currentSource === 'vidsrc.cc') {
+                videoUrl = 'https://vidsrc.cc/embed/';
                 if (currentMediaType === 'movie') {
                     videoUrl += `movie/${currentImdbId}`;
                 } else if (currentMediaType === 'tv') {
@@ -1338,8 +1338,8 @@
         // Set up alternate source button
         document.getElementById('altSourceBtn').addEventListener('click', function() {
             // Toggle between sources
-            currentSource = currentSource === 'player.vidsrc.co' ? 'vidsrc.xyz' : 'player.vidsrc.co';
-            this.textContent = `Try ${currentSource === 'player.vidsrc.co' ? 'vidsrc.xyz' : 'player.vidsrc.co'}`;
+            currentSource = currentSource === 'vidsrc.cc' ? 'vidsrc.xyz' : 'vidsrc.cc';
+            this.textContent = `Try ${currentSource === 'vidsrc.cc' ? 'vidsrc.xyz' : 'vidsrc.cc'}`;
             
             // Reload with new source
             loadVideoSource();
