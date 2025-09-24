@@ -5,7 +5,7 @@ self.addEventListener('install', function(event) {
         '/',
         '/index.html',
         '/style.css',
-        '/icon.png',
+        '/icons/apple-touch-icon.png',
         '/manifest.json'
       ]);
     })
