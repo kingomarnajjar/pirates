@@ -1,11 +1,11 @@
 {
-  "name": "Watermelon Movies 🍉",
-  "short_name": "Watermelon Movies",
+  "name": "🍉",
+  "short_name": "🍉",
   "description": "The Jews took Hollywood, we're stealing it back",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#32cd32",
-  "theme_color": "#ff6347",
+  "theme_color": "#32cd32",
   "icons": [
     {
       "src": "/icons/androis-chrome-192x192.png",
